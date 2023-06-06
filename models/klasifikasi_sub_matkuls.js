@@ -3,7 +3,7 @@ const {
   Model
 } = require('sequelize');
 module.exports = (sequelize, DataTypes) => {
-  class users extends Model {
+  class klasifikasi_sub_matkuls extends Model {
     /**
      * Helper method for defining associations.
      * This method is not a part of Sequelize lifecycle.
@@ -13,17 +13,17 @@ module.exports = (sequelize, DataTypes) => {
       // define association here
     }
   }
-  users.init({
-    username: DataTypes.STRING,
-    password: DataTypes.STRING,
-    token: DataTypes.STRING,
-    role: DataTypes.ENUM("USER","ADMIN","SUPERADMIN"),
-    full_name: DataTypes.STRING,
+  klasifikasi_sub_matkuls.init({
+    sub_matkul_id: DataTypes.INTEGER,
+    nilai_min: DataTypes.INTEGER,
+    nilai_max: DataTypes.INTEGER,
+    deskripsi: DataTypes.STRING,
+    kode_klasifikasi: DataTypes.STRING,
     createdBy: DataTypes.STRING,
     updatedBy: DataTypes.STRING
   }, {
     sequelize,
-    modelName: 'users',
+    modelName: 'klasifikasi_sub_matkuls',
   });
-  return users;
+  return klasifikasi_sub_matkuls;
 };

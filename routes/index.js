@@ -1,10 +1,12 @@
 const express = require('express');
 const router = express.Router();
-const users = require('./users');
+const user = require('./user');
+const mahasiswa = require('./mahasiswa');
 
 
 /* GET home page. */
 
-router.use('/users', users);
+router.use('/user', user);
+router.use('/mahasiswa', mahasiswa);
 
 module.exports = router;

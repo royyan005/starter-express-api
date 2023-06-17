@@ -16,7 +16,7 @@ module.exports = (sequelize, DataTypes) => {
   pembimbings.init({
     user_id: DataTypes.INTEGER,
     mahasiswa_id: DataTypes.INTEGER,
-    jenis_role: DataTypes.ENUM("PEMBIMBING1","PEMBIMBING2","PENGUJI"),
+    jenis_role: DataTypes.ENUM("pembimbing1","pembimbing2","penguji"),
     createdBy: DataTypes.STRING,
     updatedBy: DataTypes.STRING
   }, {

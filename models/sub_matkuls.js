@@ -15,7 +15,6 @@ module.exports = (sequelize, DataTypes) => {
   }
   sub_matkuls.init({
     matkul_id: DataTypes.INTEGER,
-    nilai: DataTypes.FLOAT,
     deskripsi: DataTypes.STRING,
     kode_sub_matkul: DataTypes.STRING,
     is_sub_sub_matkul: DataTypes.BOOLEAN,

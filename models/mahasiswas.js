@@ -17,6 +17,7 @@ module.exports = (sequelize, DataTypes) => {
     full_name: DataTypes.STRING,
     npm: DataTypes.STRING,
     jurusan: DataTypes.STRING,
+    ipk: DataTypes.FLOAT,
     createdBy: DataTypes.STRING,
     updatedBy: DataTypes.STRING
   }, {

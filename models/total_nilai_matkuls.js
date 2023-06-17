@@ -3,7 +3,7 @@ const {
   Model
 } = require('sequelize');
 module.exports = (sequelize, DataTypes) => {
-  class sub_sub_matkuls extends Model {
+  class total_nilai_matkuls extends Model {
     /**
      * Helper method for defining associations.
      * This method is not a part of Sequelize lifecycle.
@@ -13,15 +13,18 @@ module.exports = (sequelize, DataTypes) => {
       // define association here
     }
   }
-  sub_sub_matkuls.init({
-    sub_matkul_id: DataTypes.INTEGER,
-    deskripsi: DataTypes.STRING,
-    kode_sub_sub_matkul: DataTypes.STRING,
+  total_nilai_matkuls.init({
+    average: DataTypes.FLOAT,
+    huruf_mutu: DataTypes.ENUM("A","B","B+","C","C+","D","E"),
+    angka_mutu: DataTypes.FLOAT,
+    nilai_mutu: DataTypes.FLOAT,
+    mahasiswa_id: DataTypes.INTEGER,
+    nilai_matkul_id: DataTypes.INTEGER,
     createdBy: DataTypes.STRING,
     updatedBy: DataTypes.STRING
   }, {
     sequelize,
-    modelName: 'sub_sub_matkuls',
+    modelName: 'total_nilai_matkuls',
   });
-  return sub_sub_matkuls;
+  return total_nilai_matkuls;
 };

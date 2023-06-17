@@ -1,13 +1,12 @@
 const {
-    nilai_sub_matkuls,
-    sub_matkuls
+    nilai_matkuls
 } = require("../models")
 
 module.exports = {
     getAll: async (req, res, next) => {
         try {
-            let nilai_sub_matkul = await nilai_sub_matkuls.findAll();
-            if (!nilai_sub_matkul[0]) {
+            let nilai_matkul = await nilai_matkuls.findAll();
+            if (!nilai_matkul[0]) {
                 return res.status(400).json({
                     status: false,
                     message: 'data not found!'
@@ -16,7 +15,7 @@ module.exports = {
             return res.status(200).json({
                 status: true,
                 message: 'get all data success!',
-                data: nilai_sub_matkul
+                data: nilai_matkul
             });
         } catch (err) {
             next(err)
@@ -27,12 +26,12 @@ module.exports = {
             id
         } = req.params;
         try {
-            let nilai_sub_matkul = await nilai_sub_matkuls.findOne({
+            let nilai_matkul = await nilai_matkuls.findOne({
                 where: {
                     id: id
                 }
             });
-            if (!nilai_sub_matkul) {
+            if (!nilai_matkul) {
                 return res.status(400).json({
                     status: false,
                     message: 'data not found!',
@@ -41,7 +40,7 @@ module.exports = {
             return res.status(200).json({
                 status: true,
                 message: 'get data success!',
-                data: nilai_sub_matkul
+                data: nilai_matkul
             });
         } catch (err) {
             next(err)
@@ -49,40 +48,51 @@ module.exports = {
     },
     create: async (req, res, next) => {
         const {
-            nilai,
+            average,
+            huruf_mutu,
+            angka_mutu,
+            nilai_mutu,
             mahasiswa_id,
-            nilai_matkul_id,
-            sub_matkul_id,
+            pembimbing_id,
+            matkul_id,
             createdBy,
             updatedBy
         } = req.body;
         try {
-            // let value;
-            // let sub_matkul = await sub_matkuls.findOne({
-            //     where:{
-            //         id: sub_matkul_id
-            //     }
-            // })
+            let exist = await nilai_matkuls.findAll({
+                where: {
+                    average: average,
+                    huruf_mutu: huruf_mutu,
+                    angka_mutu: angka_mutu,
+                    nilai_mutu: nilai_mutu,
+                    mahasiswa_id: mahasiswa_id,
+                    pembimbing_id: pembimbing_id,
+                    matkul_id: matkul_id
+                }
+            })
 
-            // check apakah menggunakan sub_sub_matkul kalo iya pake rata-ratanya, kalo gak ada pake nilai inputan
-            // if(sub_matkul.is_sub_sub_matkul==true){
-            //     let sub_sub_matkul = 
-            // }else {
-            //     value = nilai;
-            // }
+            if (exist) {
+                return res.status(400).json({
+                    status: false,
+                    message: 'data already exist'
+                });
+            }
 
-            let nilai_sub_matkul = await nilai_sub_matkuls.create({
-                nilai: nilai,
+            let nilai_matkul = await nilai_matkuls.create({
+                average: average,
+                huruf_mutu: huruf_mutu,
+                angka_mutu: angka_mutu,
+                nilai_mutu: nilai_mutu,
                 mahasiswa_id: mahasiswa_id,
-                nilai_matkul_id: nilai_matkul_id,
-                sub_matkul_id: sub_matkul_id,
+                pembimbing_id: pembimbing_id,
+                matkul_id: matkul_id,
                 createdBy: createdBy,
                 updatedBy: updatedBy
             });
             return res.status(200).json({
                 status: true,
                 message: 'create data success!',
-                data: nilai_sub_matkul
+                data: nilai_matkul
             });
         } catch (err) {
             next(err)
@@ -93,30 +103,38 @@ module.exports = {
             id
         } = req.params
         const {
-            nilai,
+            average,
+            huruf_mutu,
+            angka_mutu,
+            nilai_mutu,
             mahasiswa_id,
-            sub_matkul_id,
+            pembimbing_id,
+            matkul_id,
             createdBy,
             updatedBy
         } = req.body;
         try {
-            let nilai_sub_matkul = await nilai_sub_matkuls.findOne({
+            let nilai_matkul = await nilai_matkuls.findOne({
                 where: {
                     id: id
                 }
             });
 
-            if (!nilai_sub_matkul) {
+            if (!nilai_matkul) {
                 return res.status(400).json({
                     status: false,
-                    message: 'nilai_sub_matkul not found!',
+                    message: 'nilai_matkul not found!',
                 });
             }
 
-            let updated = await nilai_sub_matkul.update({
-                nilai: nilai,
+            let updated = await nilai_matkul.update({
+                average: average,
+                huruf_mutu: huruf_mutu,
+                angka_mutu: angka_mutu,
+                nilai_mutu: nilai_mutu,
                 mahasiswa_id: mahasiswa_id,
-                sub_matkul_id: sub_matkul_id,
+                pembimbing_id: pembimbing_id,
+                matkul_id: matkul_id,
                 createdBy: createdBy,
                 updatedBy: updatedBy
             });
@@ -134,20 +152,20 @@ module.exports = {
             id
         } = req.params
         try {
-            let nilai_sub_matkul = await nilai_sub_matkuls.findOne({
+            let nilai_matkul = await nilai_matkuls.findOne({
                 where: {
                     id: id
                 }
             });
 
-            if (!nilai_sub_matkul) {
+            if (!nilai_matkul) {
                 return res.status(400).json({
                     status: false,
-                    message: 'nilai_sub_matkul not found!',
+                    message: 'nilai_matkul not found!',
                 });
             }
 
-            await nilai_sub_matkul.destroy();
+            await nilai_matkul.destroy();
             return res.status(200).json({
                 status: true,
                 message: 'delete data success!',

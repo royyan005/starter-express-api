@@ -16,6 +16,7 @@ module.exports = (sequelize, DataTypes) => {
   nilai_sub_matkuls.init({
     sub_matkul_id: DataTypes.INTEGER,
     mahasiswa_id: DataTypes.INTEGER,
+    nilai_matkul_id: DataTypes.INTEGER,
     nilai: DataTypes.FLOAT,
     createdBy: DataTypes.STRING,
     updatedBy: DataTypes.STRING

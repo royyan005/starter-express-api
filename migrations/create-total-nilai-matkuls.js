@@ -21,10 +21,10 @@ module.exports = {
       nilai_mutu: {
         type: Sequelize.FLOAT
       },
-      nilai_matkul_id: {
+      mahasiswa_id: {
         type: Sequelize.INTEGER
       },
-      mahasiswa_id: {
+      matkul_id: {
         type: Sequelize.INTEGER
       },
       createdBy: {

@@ -19,7 +19,7 @@ module.exports = (sequelize, DataTypes) => {
     angka_mutu: DataTypes.FLOAT,
     nilai_mutu: DataTypes.FLOAT,
     mahasiswa_id: DataTypes.INTEGER,
-    nilai_matkul_id: DataTypes.INTEGER,
+    matkul_id: DataTypes.INTEGER,
     createdBy: DataTypes.STRING,
     updatedBy: DataTypes.STRING
   }, {

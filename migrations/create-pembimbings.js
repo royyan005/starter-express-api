@@ -16,7 +16,7 @@ module.exports = {
         type: Sequelize.INTEGER
       },
       jenis_role: {
-        type: Sequelize.ENUM("PEMBIMBING1","PEMBIMBING2","PENGUJI")
+        type: Sequelize.ENUM("pembimbing1","pembimbing2","penguji")
       },
       createdBy: {
         type: Sequelize.STRING

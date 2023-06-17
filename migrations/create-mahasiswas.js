@@ -18,6 +18,9 @@ module.exports = {
       jurusan: {
         type: Sequelize.STRING
       },
+      ipk: {
+        type: Sequelize.FLOAT
+      },
       createdBy: {
         type: Sequelize.STRING
       },

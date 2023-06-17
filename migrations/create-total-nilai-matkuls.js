@@ -2,24 +2,30 @@
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
   async up(queryInterface, Sequelize) {
-    await queryInterface.createTable('sub_sub_matkuls', {
+    await queryInterface.createTable('total_nilai_matkuls', {
       id: {
         allowNull: false,
         autoIncrement: true,
         primaryKey: true,
         type: Sequelize.INTEGER
       },
-      sub_matkul_id: {
-        type: Sequelize.INTEGER
-      },
-      nilai: {
+      average: {
         type: Sequelize.FLOAT
       },
-      deskripsi: {
-        type: Sequelize.STRING
+      huruf_mutu: {
+        type: Sequelize.ENUM("A","B","B+","C","C+","D","E")
       },
-      kode_sub_sub_matkul: {
-        type: Sequelize.STRING
+      angka_mutu: {
+        type: Sequelize.FLOAT
+      },
+      nilai_mutu: {
+        type: Sequelize.FLOAT
+      },
+      nilai_matkul_id: {
+        type: Sequelize.INTEGER
+      },
+      mahasiswa_id: {
+        type: Sequelize.INTEGER
       },
       createdBy: {
         type: Sequelize.STRING
@@ -38,6 +44,6 @@ module.exports = {
     });
   },
   async down(queryInterface, Sequelize) {
-    await queryInterface.dropTable('sub_sub_matkuls');
+    await queryInterface.dropTable('total_nilai_matkuls');
   }
 };

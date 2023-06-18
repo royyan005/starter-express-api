@@ -15,6 +15,9 @@ module.exports = {
       mahasiswa_id: {
         type: Sequelize.INTEGER
       },
+      nilai_matkul_id: {
+        type: Sequelize.INTEGER
+      },
       nilai: {
         type: Sequelize.FLOAT
       },

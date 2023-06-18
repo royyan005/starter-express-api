@@ -16,7 +16,7 @@ module.exports = {
       {
         matkul_id: 1,               //1
         deskripsi: "Organisasi Profesi & Organisasi Lainnya (>= 3)",
-        kode_sub_matkul: "",
+        kode_sub_matkul: "submatkul1_1",
         is_sub_sub_matkul: false,
         createdAt: new Date(),
         updatedAt: new Date()
@@ -24,7 +24,7 @@ module.exports = {
       {
         matkul_id: 1,               //2
         deskripsi: "Tanda Penghargaan (>=3)",
-        kode_sub_matkul: "",
+        kode_sub_matkul: "submatkul1_2",
         is_sub_sub_matkul: false,
         createdAt: new Date(),
         updatedAt: new Date()
@@ -32,7 +32,7 @@ module.exports = {
       {
         matkul_id: 1,               //3
         deskripsi: "Referensi Kode Etik dan Etika Profesi (2-4 referensi)",
-        kode_sub_matkul: "",
+        kode_sub_matkul: "submatkul1_3",
         is_sub_sub_matkul: false,
         createdAt: new Date(),
         updatedAt: new Date()
@@ -40,7 +40,7 @@ module.exports = {
       {
         matkul_id: 1,               //4
         deskripsi: "Pengertian Pendapat dan Pengalaman Sendiri",
-        kode_sub_matkul: "",
+        kode_sub_matkul: "submatkul1_4",
         is_sub_sub_matkul: false,
         createdAt: new Date(),
         updatedAt: new Date()
@@ -48,7 +48,7 @@ module.exports = {
       {
         matkul_id: 2,               //5
         deskripsi: "Pendidikan Formal",
-        kode_sub_matkul: "",
+        kode_sub_matkul: "submatkul2_1",
         is_sub_sub_matkul: false,
         createdAt: new Date(),
         updatedAt: new Date()
@@ -56,7 +56,7 @@ module.exports = {
       {
         matkul_id: 2,               //6
         deskripsi: "Pendidikan dan Pelatihan Teknik (>=5)",
-        kode_sub_matkul: "",
+        kode_sub_matkul: "submatkul2_2",
         is_sub_sub_matkul: false,
         createdAt: new Date(),
         updatedAt: new Date()
@@ -64,7 +64,7 @@ module.exports = {
       {
         matkul_id: 2,               //7
         deskripsi: "Pengalaman Praktik Keinsinyuran",
-        kode_sub_matkul: "",
+        kode_sub_matkul: "submatkul2_3",
         is_sub_sub_matkul: false,
         createdAt: new Date(),
         updatedAt: new Date()
@@ -72,7 +72,7 @@ module.exports = {
       {
         matkul_id: 3,               //8
         deskripsi: "Pendidikan/Pelatihan Manajemen dan bidang Lainnya (>5)",
-        kode_sub_matkul: "",
+        kode_sub_matkul: "submatkul3_1",
         is_sub_sub_matkul: false,
         createdAt: new Date(),
         updatedAt: new Date()
@@ -80,7 +80,7 @@ module.exports = {
       {
         matkul_id: 3,               //9
         deskripsi: "Pengalaman Praktik Keinsinyuran",
-        kode_sub_matkul: "",
+        kode_sub_matkul: "submatkul3_2",
         is_sub_sub_matkul: true,
         createdAt: new Date(),
         updatedAt: new Date()
@@ -88,7 +88,7 @@ module.exports = {
       {
         matkul_id: 4,               //10
         deskripsi: "Pengalaman Praktik Keinsinyuran (lembaga formal dan non-formal)",
-        kode_sub_matkul: "",
+        kode_sub_matkul: "submatkul4_1",
         is_sub_sub_matkul: true,
         createdAt: new Date(),
         updatedAt: new Date()
@@ -96,7 +96,7 @@ module.exports = {
       {
         matkul_id: 5,               //11
         deskripsi: "Sudi Kasus Keinsinyuran",
-        kode_sub_matkul: "",
+        kode_sub_matkul: "submatkul5_1",
         is_sub_sub_matkul: false,
         createdAt: new Date(),
         updatedAt: new Date()
@@ -104,7 +104,7 @@ module.exports = {
       {
         matkul_id: 5,               //12
         deskripsi: "Memberi pelayanan kepada masyarakat bidang keinsinyuran (>3 kegiatan)",
-        kode_sub_matkul: "",
+        kode_sub_matkul: "submatkul5_2",
         is_sub_sub_matkul: false,
         createdAt: new Date(),
         updatedAt: new Date()
@@ -112,7 +112,7 @@ module.exports = {
       {
         matkul_id: 5,               //13
         deskripsi: "Menunjang pelaksanaan tugas umum pemerintah dan pembangunan",
-        kode_sub_matkul: "",
+        kode_sub_matkul: "submatkul5_3",
         is_sub_sub_matkul: false,
         createdAt: new Date(),
         updatedAt: new Date()
@@ -120,7 +120,7 @@ module.exports = {
       {
         matkul_id: 6,               //14
         deskripsi: "Pengalaman Seminar, Workshop, Diskusi Sebagai pembicara maupun peserta",
-        kode_sub_matkul: "",
+        kode_sub_matkul: "submatkul6_1",
         is_sub_sub_matkul: false,
         createdAt: new Date(),
         updatedAt: new Date()

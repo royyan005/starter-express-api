@@ -18,9 +18,6 @@ module.exports = {
       angka_mutu: {
         type: Sequelize.FLOAT
       },
-      nilai_mutu: {
-        type: Sequelize.FLOAT
-      },
       pembimbing_id: {
         type: Sequelize.INTEGER
       },

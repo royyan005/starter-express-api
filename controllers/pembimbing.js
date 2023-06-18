@@ -55,6 +55,22 @@ module.exports = {
             updatedBy
         } = req.body;
         try {
+
+            let pembimbingExist = await pembimbings.findAll({
+                where: {
+                    user_id: user_id,
+                    mahasiswa_id: mahasiswa_id
+                }
+            })
+
+            if (pembimbingExist) {
+                return res.status(400).json({
+                    status: false,
+                    message: 'user sudah menjadi pembimbing/penguji',
+                    data: pembimbingExist
+                })
+            }
+
             let pembimbing = await pembimbings.create({
                 user_id: user_id,
                 mahasiswa_id: mahasiswa_id,
@@ -92,7 +108,7 @@ module.exports = {
             if (!pembimbing) {
                 return res.status(400).json({
                     status: false,
-                    message: 'pembimbing not found!',
+                    message: 'data not found!',
                 });
             }
 

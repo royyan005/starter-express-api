@@ -16,56 +16,56 @@ module.exports = {
       {
         sub_matkul_id: 9,         //1
         deskripsi: "Praktik Keinsinyuran Setingkat Pengambil Kebijakan",
-        kode_sub_sub_matkul: "",
+        kode_sub_sub_matkul: "subsubmatkul3_2_1",
         createdAt: new Date(),
         updatedAt: new Date()
       },
       {
         sub_matkul_id: 9,         //2
         deskripsi: "Praktik Keinsinyuran Setingkat Manajer",
-        kode_sub_sub_matkul: "",
+        kode_sub_sub_matkul: "subsubmatkul3_2_2",
         createdAt: new Date(),
         updatedAt: new Date()
       },
       {
         sub_matkul_id: 9,         //3
         deskripsi: "Praktik Keinsinyuran Setingkat Pelaksana",
-        kode_sub_sub_matkul: "",
+        kode_sub_sub_matkul: "subsubmatkul3_2_3",
         createdAt: new Date(),
         updatedAt: new Date()
       },
       {
         sub_matkul_id: 9,         //4
         deskripsi: "Praktik Keinsinyuran Setingkat Operator",
-        kode_sub_sub_matkul: "",
+        kode_sub_sub_matkul: "subsubmatkul3_2_4",
         createdAt: new Date(),
         updatedAt: new Date()
       },
       {
         sub_matkul_id: 10,         //5
         deskripsi: "Dosen/peneliti/lembaga litbang",
-        kode_sub_sub_matkul: "",
+        kode_sub_sub_matkul: "subsubmatkul4_1_1",
         createdAt: new Date(),
         updatedAt: new Date()
       },
       {
         sub_matkul_id: 10,         //6
         deskripsi: "Direksi/GM",
-        kode_sub_sub_matkul: "",
+        kode_sub_sub_matkul: "subsubmatkul4_1_2",
         createdAt: new Date(),
         updatedAt: new Date()
       },
       {
         sub_matkul_id: 10,         //7
         deskripsi: "Leader manager",
-        kode_sub_sub_matkul: "",
+        kode_sub_sub_matkul: "subsubmatkul4_1_3",
         createdAt: new Date(),
         updatedAt: new Date()
       },
       {
         sub_matkul_id: 10,         //8
         deskripsi: "Engineer",
-        kode_sub_sub_matkul: "",
+        kode_sub_sub_matkul: "subsubmatkul4_1_4",
         createdAt: new Date(),
         updatedAt: new Date()
       },

@@ -62,12 +62,25 @@ module.exports = {
                     mahasiswa_id: mahasiswa_id
                 }
             })
+            let roleExist = await pembimbings.findAll({
+                where: {
+                    jenis_role: jenis_role,
+                    mahasiswa_id: mahasiswa_id
+                }
+            })
 
-            if (pembimbingExist) {
+            if (pembimbingExist[0]) {
                 return res.status(400).json({
                     status: false,
                     message: 'user sudah menjadi pembimbing/penguji',
                     data: pembimbingExist
+                })
+            }
+            if (roleExist[0]) {
+                return res.status(400).json({
+                    status: false,
+                    message: 'role sudah terpakai!',
+                    data: roleExist
                 })
             }
 

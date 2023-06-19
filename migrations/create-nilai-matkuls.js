@@ -15,9 +15,6 @@ module.exports = {
       huruf_mutu: {
         type: Sequelize.ENUM("A","B","B+","C","C+","D","E")
       },
-      angka_mutu: {
-        type: Sequelize.FLOAT
-      },
       pembimbing_id: {
         type: Sequelize.INTEGER
       },

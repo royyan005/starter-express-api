@@ -24,7 +24,7 @@ module.exports = {
     },
     
     AngkaMutu: (hurufmutu) => {
-        var angkamutu = ''
+        var angkamutu=0;
         if (hurufmutu == 'A') {
             return angkamutu = 4
         } else if (hurufmutu == 'B+') {

@@ -4,6 +4,7 @@ const {
     nilai_sub_sub_matkuls,
     users,
     mahasiswas,
+    pembimbings,
     // total_nilai_matkuls,
     matkuls,
     sub_matkuls,
@@ -11,8 +12,7 @@ const {
 } = require("../models")
 
 const {
-    HurufMutu,
-    AngkaMutu
+    HurufMutu
 } = require("../helpers/helper");
 const mahasiswa = require("./mahasiswa");
 
@@ -24,17 +24,23 @@ module.exports = {
         } = req.params
         try {
             let matkul = await matkuls.findAll();
-            
+
             let user = await users.findOne({
-                where:{
+                where: {
                     id: user_id
                 }
             });
             let mahasiswa = await mahasiswas.findOne({
-                where:{
+                where: {
                     id: mahasiswa_id
                 }
             });
+            let pembimbing = await pembimbings.findOne({
+                where: {
+                    user_id: user.id,
+                    mahasiswa_id: mahasiswa.id
+                }
+            })
             let nilai_matkul;
             let nilai_sub_matkul;
             let nilai_sub_sub_matkul;
@@ -44,11 +50,10 @@ module.exports = {
             let nilai = [];
             let data = {
                 nama_pembimbing: user.full_name,
+                role: pembimbing.jenis_role,
                 nama_mahasiswa: mahasiswa.full_name,
                 nilai
             };
-            // let matkul1, matkul2, matkul3, matkul4, matkul5, matkul6;
-            // let sub_matkul1, sub_matkul2, sub_matkul3, sub_matkul4, sub_matkul5, sub_matkul6;
             while (matkul[i]) {
                 nilai_matkul = await nilai_matkuls.findOne({
                     where: {
@@ -73,6 +78,7 @@ module.exports = {
                     nilai_sub_matkul = await nilai_sub_matkuls.findOne({
                         where: {
                             sub_matkul_id: sub_matkul[j].id,
+                            nilai_matkul_id: nilai_matkul.id,
                             mahasiswa_id: mahasiswa_id
                         }
                     })
@@ -174,6 +180,30 @@ module.exports = {
             nilai6_1
         } = req.body;
         try {
+            let mahasiswa = await mahasiswas.findOne({
+                where: {
+                    id: mahasiswa_id
+                }
+            })
+            let user = await users.findOne({
+                where: {
+                    id: user_id,
+
+                }
+            })
+            let pembimbing = await pembimbings.findOne({
+                where: {
+                    user_id: user.id,
+                    mahasiswa_id: mahasiswa.id
+                }
+            })
+
+            if (!pembimbing) {
+                return res.status(400).json({
+                    status: false,
+                    message: 'User tidak berhak menginput nilai!',
+                });
+            }
 
             // MATKUL 1
 
@@ -186,7 +216,6 @@ module.exports = {
             let nilai_matkul1 = await nilai_matkuls.create({
                 average: 0,
                 huruf_mutu: "E",
-                angka_mutu: 0,
                 pembimbing_id: user_id,
                 mahasiswa_id: mahasiswa_id,
                 matkul_id: matkul1.id,
@@ -256,12 +285,10 @@ module.exports = {
 
             let avg_nilai_matkul1 = (nilai1_1 + nilai1_2 + nilai1_3 + nilai1_4) / 4;
             let huruf_mutu_matkul1 = HurufMutu(avg_nilai_matkul1);
-            let angka_mutu_matkul1 = AngkaMutu(huruf_mutu_matkul1);
 
             let updated_nilai_matkul1 = await nilai_matkul1.update({
                 average: avg_nilai_matkul1,
                 huruf_mutu: huruf_mutu_matkul1,
-                angka_mutu: angka_mutu_matkul1,
                 createdBy: "",
                 updatedBy: ""
             })
@@ -277,7 +304,6 @@ module.exports = {
             let nilai_matkul2 = await nilai_matkuls.create({
                 average: 0,
                 huruf_mutu: "E",
-                angka_mutu: 0,
                 pembimbing_id: user_id,
                 mahasiswa_id: mahasiswa_id,
                 matkul_id: matkul2.id,
@@ -294,7 +320,7 @@ module.exports = {
             let nilai_sub_matkul2_1 = await nilai_sub_matkuls.create({
                 sub_matkul_id: sub_matkul2_1.id,
                 mahasiswa_id: mahasiswa_id,
-                nilai_matkul_id: nilai_matkul1.id,
+                nilai_matkul_id: nilai_matkul2.id,
                 nilai: nilai2_1,
                 createdBy: "",
                 updatedBy: ""
@@ -332,12 +358,10 @@ module.exports = {
 
             let avg_nilai_matkul2 = (nilai2_1 + nilai2_2 + nilai2_3) / 3;
             let huruf_mutu_matkul2 = HurufMutu(avg_nilai_matkul2);
-            let angka_mutu_matkul2 = AngkaMutu(huruf_mutu_matkul2);
 
             let updated_nilai_matkul2 = await nilai_matkul2.update({
                 average: avg_nilai_matkul2,
                 huruf_mutu: huruf_mutu_matkul2,
-                angka_mutu: angka_mutu_matkul2,
                 createdBy: "",
                 updatedBy: ""
             })
@@ -353,7 +377,6 @@ module.exports = {
             let nilai_matkul3 = await nilai_matkuls.create({
                 average: 0,
                 huruf_mutu: "E",
-                angka_mutu: 0,
                 pembimbing_id: user_id,
                 mahasiswa_id: mahasiswa_id,
                 matkul_id: matkul3.id,
@@ -460,12 +483,10 @@ module.exports = {
 
             let avg_nilai_matkul3 = (nilai3_1 + avg_nilai_sub_matkul3_2) / 2;
             let huruf_mutu_matkul3 = HurufMutu(avg_nilai_matkul3);
-            let angka_mutu_matkul3 = AngkaMutu(huruf_mutu_matkul3);
 
             let updated_nilai_matkul3 = await nilai_matkul3.update({
                 average: avg_nilai_matkul3,
                 huruf_mutu: huruf_mutu_matkul3,
-                angka_mutu: angka_mutu_matkul3,
                 createdBy: "",
                 updatedBy: ""
             })
@@ -481,7 +502,6 @@ module.exports = {
             let nilai_matkul4 = await nilai_matkuls.create({
                 average: 0,
                 huruf_mutu: "E",
-                angka_mutu: 0,
                 pembimbing_id: user_id,
                 mahasiswa_id: mahasiswa_id,
                 matkul_id: matkul4.id,
@@ -572,12 +592,10 @@ module.exports = {
             })
 
             let huruf_mutu_matkul4 = HurufMutu(avg_nilai_sub_matkul4_1);
-            let angka_mutu_matkul4 = AngkaMutu(huruf_mutu_matkul4);
 
             let updated_nilai_matkul4 = await nilai_matkul4.update({
                 average: avg_nilai_sub_matkul4_1,
                 huruf_mutu: huruf_mutu_matkul4,
-                angka_mutu: angka_mutu_matkul4,
                 createdBy: "",
                 updatedBy: ""
             })
@@ -593,7 +611,6 @@ module.exports = {
             let nilai_matkul5 = await nilai_matkuls.create({
                 average: 0,
                 huruf_mutu: "E",
-                angka_mutu: 0,
                 pembimbing_id: user_id,
                 mahasiswa_id: mahasiswa_id,
                 matkul_id: matkul5.id,
@@ -648,12 +665,10 @@ module.exports = {
 
             let avg_nilai_matkul5 = (nilai5_1 + nilai5_2 + nilai5_3) / 3;
             let huruf_mutu_matkul5 = HurufMutu(avg_nilai_matkul5);
-            let angka_mutu_matkul5 = AngkaMutu(huruf_mutu_matkul5);
 
             let updated_nilai_matkul5 = await nilai_matkul5.update({
                 average: avg_nilai_matkul5,
                 huruf_mutu: huruf_mutu_matkul5,
-                angka_mutu: angka_mutu_matkul5,
                 createdBy: "",
                 updatedBy: ""
             })
@@ -669,7 +684,6 @@ module.exports = {
             let nilai_matkul6 = await nilai_matkuls.create({
                 average: 0,
                 huruf_mutu: "E",
-                angka_mutu: 0,
                 pembimbing_id: user_id,
                 mahasiswa_id: mahasiswa_id,
                 matkul_id: matkul6.id,
@@ -693,12 +707,10 @@ module.exports = {
             })
 
             let huruf_mutu_matkul6 = HurufMutu(nilai6_1);
-            let angka_mutu_matkul6 = AngkaMutu(huruf_mutu_matkul6);
 
             let updated_nilai_matkul6 = await nilai_matkul6.update({
                 average: nilai6_1,
                 huruf_mutu: huruf_mutu_matkul6,
-                angka_mutu: angka_mutu_matkul6,
                 createdBy: "",
                 updatedBy: ""
             })
@@ -706,31 +718,37 @@ module.exports = {
             return res.status(200).json({
                 status: true,
                 message: 'create data success!',
-                data: [{
-                        nama_matkul: matkul1.deskripsi,
-                        nilai: updated_nilai_matkul1
-                    },
-                    {
-                        nama_matkul: matkul2.deskripsi,
-                        nilai: updated_nilai_matkul2
-                    },
-                    {
-                        nama_matkul: matkul3.deskripsi,
-                        nilai: updated_nilai_matkul3
-                    },
-                    {
-                        nama_matkul: matkul4.deskripsi,
-                        nilai: updated_nilai_matkul4
-                    },
-                    {
-                        nama_matkul: matkul5.deskripsi,
-                        nilai: updated_nilai_matkul5
-                    },
-                    {
-                        nama_matkul: matkul6.deskripsi,
-                        nilai: updated_nilai_matkul6
-                    }
-                ]
+                data: {
+                    nama_pembimbing: user.full_name,
+                    role_pembimbing: pembimbing.jenis_role,
+                    nama_mahasiswa: mahasiswa.full_name,
+                    npm_mahasiswa: mahasiswa.npm,
+                    nilai: [{
+                            nama_matkul: matkul1.deskripsi,
+                            nilai: updated_nilai_matkul1
+                        },
+                        {
+                            nama_matkul: matkul2.deskripsi,
+                            nilai: updated_nilai_matkul2
+                        },
+                        {
+                            nama_matkul: matkul3.deskripsi,
+                            nilai: updated_nilai_matkul3
+                        },
+                        {
+                            nama_matkul: matkul4.deskripsi,
+                            nilai: updated_nilai_matkul4
+                        },
+                        {
+                            nama_matkul: matkul5.deskripsi,
+                            nilai: updated_nilai_matkul5
+                        },
+                        {
+                            nama_matkul: matkul6.deskripsi,
+                            nilai: updated_nilai_matkul6
+                        }
+                    ]
+                }
             });
         } catch (err) {
             next(err)

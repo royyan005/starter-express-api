@@ -16,7 +16,6 @@ module.exports = (sequelize, DataTypes) => {
   nilai_matkuls.init({
     average: DataTypes.FLOAT,
     huruf_mutu: DataTypes.ENUM("A","B","B+","C","C+","D","E"),
-    angka_mutu: DataTypes.FLOAT,
     pembimbing_id: DataTypes.INTEGER,
     mahasiswa_id: DataTypes.INTEGER,
     matkul_id: DataTypes.INTEGER,

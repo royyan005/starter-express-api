@@ -46,6 +46,7 @@ module.exports = {
             next(err)
         }
     },
+    
     create: async (req, res, next) => {
         const {
             username,

@@ -162,11 +162,26 @@ module.exports = {
                     id: mahasiswa_id
                 }
             })
+
+            if (!mahasiswa) {
+                return res.status(400).json({
+                    status: false,
+                    message: 'Mahasiswa not found',
+                });
+            }
             let user = await users.findOne({
                 where: {
                     id: user_id,
                 }
             })
+
+            if (!user) {
+                return res.status(400).json({
+                    status: false,
+                    message: 'user not found',
+                });
+            }
+
             let pembimbing = await pembimbings.findOne({
                 where: {
                     user_id: user.id,
@@ -177,7 +192,7 @@ module.exports = {
             if (!pembimbing) {
                 return res.status(400).json({
                     status: false,
-                    message: 'User tidak berhak menginput nilai!',
+                    message: 'User tidak ada/tidak berhak menginput nilai!',
                 });
             }
 
@@ -188,12 +203,12 @@ module.exports = {
                 }
             })
 
-            if(formExist[0]){
+            if (formExist[0]) {
                 return res.status(400).json({
                     status: false,
                     message: 'form already exist!',
                 });
-            } 
+            }
 
             // MATKUL 1
 
@@ -1401,5 +1416,103 @@ module.exports = {
             next(err)
         }
     },
+    // postNilaiMatkul1: async (req, res, next) => {
+    //     const {
+    //         mahasiswa_id
+    //     } = req.params
+    //     const {
+    //         user_id
+    //     } = req.body
+    //     try {
+    //         let matkul1 = await matkuls.findOne({
+    //             where: {
+    //                 kode_matkul: "matkul1"
+    //             }
+    //         });
+
+    //         if (!matkul1) {
+    //             return res.status(400).json({
+    //                 status: false,
+    //                 message: 'matkul not found',
+
+    //             });
+    //         }
+
+    //         let user = await users.findOne({
+    //             where: {
+    //                 id: user_id
+    //             }
+    //         });
+
+    //         if (!user) {
+    //             return res.status(400).json({
+    //                 status: false,
+    //                 message: 'user not found',
+
+    //             });
+    //         }
+
+    //         let mahasiswa = await mahasiswas.findOne({
+    //             where: {
+    //                 id: mahasiswa_id
+    //             }
+    //         });
+
+    //         if (!mahasiswa) {
+    //             return res.status(400).json({
+    //                 status: false,
+    //                 message: 'mahasiswa not found',
+
+    //             });
+    //         }
+
+    //         let pembimbing = await pembimbings.findOne({
+    //             where: {
+    //                 user_id: user.id,
+    //                 mahasiswa_id: mahasiswa.id
+    //             }
+    //         })
+
+    //         if (!pembimbing) {
+    //             return res.status(400).json({
+    //                 status: false,
+    //                 message: 'pembimbing not found',
+
+    //             });
+    //         }
+
+    //         let nilaiExist = nilai_matkuls.findOne({
+    //             where: {
+    //                 pembimbing_id: pembimbing.id,
+    //                 mahasiswa_id: mahasiswa.id,
+    //                 matkul_id: matkul1.id
+    //             }
+    //         })
+
+    //         let nilai_matkul1 = nilai_matkuls.create({
+    //             average: 0,
+    //             huruf_mutu: "E",
+    //             pembimbing_id: pembimbing.id,
+    //             mahasiswa_id: mahasiswa.id,
+    //             matkul_id: matkul1.id,
+    //             createdBy: "",
+    //             updatedBy: ""
+    //         })
+            
+
+
+    //         let nilai_sub_matkul1 = nilai_sub_matkuls.bulkCreate([{
+
+    //         }])
+
+    //         return res.status(200).json({
+    //             status: true,
+    //             message: 'get all data success!',
+    //             data: data
+    //         });
+    //     } catch (err) {
+    //         next(err)
+    //     }
+    // },
 
 }

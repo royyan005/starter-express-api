@@ -50,8 +50,6 @@ module.exports = {
         const {
             average,
             huruf_mutu,
-            
-            nilai_mutu,
             mahasiswa_id,
             pembimbing_id,
             matkul_id,
@@ -63,7 +61,6 @@ module.exports = {
                 where: {
                     average: average,
                     huruf_mutu: huruf_mutu,
-                    nilai_mutu: nilai_mutu,
                     mahasiswa_id: mahasiswa_id,
                     pembimbing_id: pembimbing_id,
                     matkul_id: matkul_id
@@ -80,7 +77,6 @@ module.exports = {
             let nilai_matkul = await nilai_matkuls.create({
                 average: average,
                 huruf_mutu: huruf_mutu,
-                nilai_mutu: nilai_mutu,
                 mahasiswa_id: mahasiswa_id,
                 pembimbing_id: pembimbing_id,
                 matkul_id: matkul_id,
@@ -103,7 +99,6 @@ module.exports = {
         const {
             average,
             huruf_mutu,
-            nilai_mutu,
             mahasiswa_id,
             pembimbing_id,
             matkul_id,
@@ -127,7 +122,6 @@ module.exports = {
             let updated = await nilai_matkul.update({
                 average: average,
                 huruf_mutu: huruf_mutu,
-                nilai_mutu: nilai_mutu,
                 mahasiswa_id: mahasiswa_id,
                 pembimbing_id: pembimbing_id,
                 matkul_id: matkul_id,

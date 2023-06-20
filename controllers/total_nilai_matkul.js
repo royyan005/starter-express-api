@@ -136,6 +136,13 @@ module.exports = {
                 }
             })
 
+            if(!mahasiswa){
+                return res.status(400).json({
+                    status: false,
+                    message: 'mahasiswa not found!'
+                });
+            }
+
             let matkul = await matkuls.findAll();
 
             let output = {

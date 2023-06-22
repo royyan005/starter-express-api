@@ -6,6 +6,9 @@ const {
     matkuls,
     pembimbings
 } = require("../models")
+const {
+    HurufMutu
+} = require("../helpers/helper");
 
 module.exports = {
     getAll: async (req, res, next) => {
@@ -231,7 +234,7 @@ module.exports = {
                 updatedBy: updatedBy
             });
 
-            let getAllNilaiSubMatkul = await sub_matkuls.findAll({
+            let getAllNilaiSubMatkul = await nilai_sub_matkuls.findAll({
                 where: {
                     nilai_matkul_id: nilai_matkul.id
                 }

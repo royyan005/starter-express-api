@@ -1,6 +1,12 @@
 const {
-    nilai_sub_sub_matkuls
-} = require("../models")
+    nilai_sub_sub_matkuls,
+    nilai_sub_matkuls,
+    nilai_matkuls,
+    sub_sub_matkuls,
+    sub_matkuls,
+    matkuls,
+    pembimbings
+} = require("../models");
 
 module.exports = {
     getAll: async (req, res, next) => {
@@ -48,20 +54,122 @@ module.exports = {
     },
     create: async (req, res, next) => {
         const {
-            nilai,
-            nilai_sub_matkul_id,
-            sub_sub_matkul_id,
-            createdBy,
-            updatedBy
+            user_id,
+            nilai = 0,
+            sub_sub_matkul_id
         } = req.body;
+        const {
+            mahasiswa_id
+        } = req.params
         try {
-            let nilai_sub_sub_matkul = await nilai_sub_sub_matkuls.create({
-                nilai: nilai,
-                nilai_sub_matkul_id: nilai_sub_matkul_id,
-                sub_sub_matkul_id: sub_sub_matkul_id,
-                createdBy: createdBy,
-                updatedBy: updatedBy
-            });
+            let nilai_matkul;
+            let nilai_sub_matkul;
+            let nilai_sub_sub_matkul;
+            let nilai_sub_sub_matkul_exist
+            let pembimbing = await pembimbings.findOne({
+                where: {
+                    user_id: user_id,
+                    mahasiswa_id: mahasiswa_id
+                }
+            })
+            let sub_sub_matkul = await sub_sub_matkuls.findOne({
+                where: {
+                    id: sub_sub_matkul_id
+                }
+            })
+
+            let sub_matkul = await sub_matkuls.findOne({
+                where: {
+                    id: sub_sub_matkul.sub_matkul_id
+                }
+            })
+
+            let matkul = await matkuls.findOne({
+                where: {
+                    id: sub_matkul.matkul_id
+                }
+            })
+            let nilai_matkul_exist = await nilai_matkuls.findOne({
+                where: {
+                    mahasiswa_id: mahasiswa_id,
+                    matkul_id: matkul.id,
+                    pembimbing_id: pembimbing.id
+                }
+            })
+            if (!nilai_matkul_exist) {
+                nilai_matkul = await nilai_matkuls.create({
+                    average: 0,
+                    huruf_mutu: "E",
+                    pembimbing_id: pembimbing.id,
+                    mahasiswa_id: mahasiswa_id,
+                    matkul_id: matkul.id,
+                    createdBy: "",
+                    updatedBy: ""
+                })
+                nilai_sub_matkul = await nilai_sub_matkuls.create({
+                    sub_matkul_id: sub_matkul.id,
+                    nilai_matkul_id: nilai_matkul.id,
+                    nilai: 0,
+                    createdBy: "",
+                    updatedBy: ""
+                })
+
+                nilai_sub_sub_matkul = await nilai_sub_sub_matkuls.create({
+                    nilai: nilai,
+                    nilai_sub_matkul_id: nilai_sub_matkul.id,
+                    sub_sub_matkul_id: sub_sub_matkul_id,
+                    createdBy: "",
+                    updatedBy: ""
+                });
+            } else {
+                let nilai_sub_matkul_exist = await nilai_sub_matkuls.findOne({
+                    where: {
+                        sub_matkul_id: sub_matkul.id,
+                        nilai_matkul_id: nilai_matkul_exist.id
+                    }
+                })
+                if (!nilai_sub_matkul_exist) {
+                    nilai_sub_matkul = await nilai_sub_matkuls.create({
+                        sub_matkul_id: sub_matkul.id,
+                        nilai_matkul_id: nilai_matkul_exist.id,
+                        nilai: 0,
+                        createdBy: "",
+                        updatedBy: ""
+                    })
+
+                    nilai_sub_sub_matkul = await nilai_sub_sub_matkuls.create({
+                        nilai: nilai,
+                        nilai_sub_matkul_id: nilai_sub_matkul.id,
+                        sub_sub_matkul_id: sub_sub_matkul_id,
+                        createdBy: "",
+                        updatedBy: ""
+                    });
+                } else {
+
+                    nilai_sub_sub_matkul_exist = await nilai_sub_sub_matkuls.findOne({
+                        where: {
+                            sub_sub_matkul_id: sub_sub_matkul_id,
+                            nilai_sub_matkul_id: nilai_sub_matkul_exist.id
+                        }
+                    })
+
+                    if (nilai_sub_sub_matkul_exist) {
+                        return res.status(400).json({
+                            status: false,
+                            message: 'data already exist!',
+                            data: nilai_sub_sub_matkul
+                        });
+                    }
+
+                    nilai_sub_sub_matkul = await nilai_sub_sub_matkuls.create({
+                        nilai: nilai,
+                        nilai_sub_matkul_id: nilai_sub_matkul_exist.id,
+                        sub_sub_matkul_id: sub_sub_matkul_id,
+                        createdBy: "",
+                        updatedBy: ""
+                    });
+                }
+            }
             return res.status(200).json({
                 status: true,
                 message: 'create data success!',
@@ -76,11 +184,10 @@ module.exports = {
             id
         } = req.params
         const {
-            nilai,
-            nilai_sub_matkul_id,
-            sub_sub_matkul_id,
-            createdBy,
-            updatedBy
+            user_id,
+            nilai = 0,
+            createdBy = "",
+            updatedBy = ""
         } = req.body;
         try {
             let nilai_sub_sub_matkul = await nilai_sub_sub_matkuls.findOne({
@@ -96,13 +203,89 @@ module.exports = {
                 });
             }
 
+            let nilai_sub_matkul = await nilai_sub_matkuls.findOne({
+                where:{
+                    id: nilai_sub_sub_matkul.nilai_sub_matkul_id
+                }
+            })
+
+            let nilai_matkul = await nilai_matkuls.findOne({
+                where:{
+                    id: nilai_sub_matkul.nilai_matkul_id
+                }
+            })
+
+            let pembimbing = await pembimbings.findOne({
+                where:{
+                    user_id: user_id,
+                    mahasiswa_id: nilai_matkul.mahasiswa_id
+                }
+            })
+
+            if (!pembimbing) {
+                return res.status(400).json({
+                    status: false,
+                    message: 'user bukan pembimbing atau penguji mahasiswa ini!',
+                });
+            }
+
+            if (nilai_matkul.pembimbing_id != pembimbing.id) {
+                return res.status(400).json({
+                    status: false,
+                    message: 'pembimbing atau penguji tidak berhak mengubah nilai!',
+                });
+            }
+
             let updated = await nilai_sub_sub_matkul.update({
                 nilai: nilai,
-                nilai_sub_matkul_id: nilai_sub_matkul_id,
-                sub_sub_matkul_id: sub_sub_matkul_id,
                 createdBy: createdBy,
                 updatedBy: updatedBy
             });
+
+            let getAllNilaiSubSubMatkul = await nilai_sub_sub_matkuls.findAll({
+                where:{
+                    nilai_sub_matkul_id: nilai_sub_matkul.id
+                }
+            })
+
+            let i = 0;
+            let total = 0;
+            let average = 0;
+
+            while (getAllNilaiSubSubMatkul[i]) {
+                total += getAllNilaiSubSubMatkul[i].nilai;
+                i++
+            }
+
+            average = total / i
+
+            await nilai_sub_matkul.update({
+                nilai: average,
+                huruf_mutu: HurufMutu(average)
+            })
+
+            let getAllNilaiSubMatkul = await sub_matkuls.findAll({
+                where: {
+                    nilai_matkul_id: nilai_matkul.id
+                }
+            })
+
+            i = 0;
+            total = 0;
+            average = 0;
+
+            while (getAllNilaiSubMatkul[i]) {
+                total += getAllNilaiSubMatkul[i].nilai;
+                i++
+            }
+
+            average = total / i
+
+            await nilai_matkul.update({
+                average: average,
+                huruf_mutu: HurufMutu(average)
+            })
+
             return res.status(200).json({
                 status: true,
                 message: 'update data success!',

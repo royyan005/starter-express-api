@@ -1,6 +1,12 @@
 const {
-    nilai_matkuls
+    nilai_matkuls,
+    nilai_sub_matkuls,
+    pembimbings
 } = require("../models")
+
+const {
+    HurufMutu
+} = require("../helpers/helper");
 
 module.exports = {
     getAll: async (req, res, next) => {
@@ -47,42 +53,49 @@ module.exports = {
         }
     },
     create: async (req, res, next) => {
+        const {mahasiswa_id} = req.params
         const {
-            average,
-            huruf_mutu,
-            mahasiswa_id,
-            pembimbing_id,
-            matkul_id,
-            createdBy,
-            updatedBy
+            user_id,
+            matkul_id
         } = req.body;
         try {
-            let exist = await nilai_matkuls.findAll({
-                where: {
-                    average: average,
-                    huruf_mutu: huruf_mutu,
+
+            let pembimbing = await pembimbings.findOne({
+                where:{
+                    user_id: user_id,
+                    mahasiswa_id: mahasiswa_id
+                }
+            })
+            let nilai_matkul = await nilai_matkuls.findOne({
+                where:{
                     mahasiswa_id: mahasiswa_id,
-                    pembimbing_id: pembimbing_id,
+                    pembimbing_id: pembimbing.id,
                     matkul_id: matkul_id
                 }
             })
 
-            if (exist) {
-                return res.status(400).json({
-                    status: false,
-                    message: 'data already exist'
-                });
+            let nilai_sub_matkul = await nilai_sub_matkuls.findAll({
+                where:{
+                    nilai_matkul_id: nilai_matkul.id
+                }
+            })
+
+            let i = 0;
+            let total = 0;
+            let average = 0;
+
+            while(nilai_sub_matkul[i]){
+                total += nilai_sub_matkul[i].nilai;
+                i++
             }
 
-            let nilai_matkul = await nilai_matkuls.create({
+            average = total/i
+
+            await nilai_matkul.update({
                 average: average,
-                huruf_mutu: huruf_mutu,
-                mahasiswa_id: mahasiswa_id,
-                pembimbing_id: pembimbing_id,
-                matkul_id: matkul_id,
-                createdBy: createdBy,
-                updatedBy: updatedBy
-            });
+                huruf_mutu: HurufMutu(average)
+            })
+
             return res.status(200).json({
                 status: true,
                 message: 'create data success!',

@@ -12,9 +12,6 @@ module.exports = {
       sub_matkul_id: {
         type: Sequelize.INTEGER
       },
-      mahasiswa_id: {
-        type: Sequelize.INTEGER
-      },
       nilai_matkul_id: {
         type: Sequelize.INTEGER
       },

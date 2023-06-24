@@ -48,7 +48,7 @@ module.exports = {
             next(err)
         }
     },
-    
+
     create: async (req, res, next) => {
         const {
             username,
@@ -74,10 +74,10 @@ module.exports = {
             }
 
             if (password !== rePassword)
-            return res.status(400).json({
-                status: false,
-                message: 'Password dan rePassword tidak cocok !'
-            });
+                return res.status(400).json({
+                    status: false,
+                    message: 'Password dan rePassword tidak cocok !'
+                });
 
             const salt = await bcrypt.genSalt(10);
             const hashPassword = await bcrypt.hash(req.body.password, salt);
@@ -104,27 +104,86 @@ module.exports = {
     },
 
     login: async (req, res) => {
+        const refreshTokenCookie = req.cookies.refreshToken;
+        if (refreshTokenCookie) {
+            const user = await users.findAll({
+                where: {
+                    token: refreshTokenCookie
+                }
+            });
+    
+            if (user == '') {
+                return res.status(400).json({
+                    status: res.statusCode,
+                    message: 'User tidak ditemukan'
+                });
+            }
+
+            const idUser = user[0].id;
+            const username = user[0].username;
+            const accessToken = jwt.sign({
+                    idUser,
+                    username,
+                },
+                process.env.ACCESS_TOKEN_SECRET, {
+                    expiresIn: '1d'
+                }
+            );
+            const refreshToken = jwt.sign({
+                    idUser,
+                    username,
+                },
+                process.env.REFRESH_TOKEN_SECRET, {
+                    expiresIn: '7d'
+                }
+            );
+            await users.update({
+                token: refreshToken
+            }, {
+                where: {
+                    id: idUser
+                }
+            });
+            res.cookie('refreshToken', refreshToken, {
+                httpOnly: true,
+                maxAge: 24 * 60 * 60 * 1000
+            });
+            return res.status(200).json({
+                status: res.statusCode,
+                message: 'Berhasil Login',
+                token: accessToken
+            });
+        }
+
+        if (!req.body.username || !req.body.password) {
+            return res.status(400).json({
+                status: res.statusCode,
+                message: 'Username dan password harus diisi'
+            });
+        }
         const user = await users.findAll({
             where: {
                 username: req.body.username
             }
         });
-    
+
         if (user == '') {
             return res.status(400).json({
                 status: res.statusCode,
                 message: 'User tidak ditemukan'
             });
         }
+        
         const match = await bcrypt.compare(req.body.password, user[0].password);
         if (!match) {
             return res.status(403).json({
                 message: "wrong password"
             });
         }
-    
+
         const idUser = user[0].id;
         const username = user[0].username;
+
         const accessToken = jwt.sign({
                 idUser,
                 username,
@@ -141,6 +200,7 @@ module.exports = {
                 expiresIn: '7d'
             }
         );
+
         await users.update({
             token: refreshToken
         }, {
@@ -148,11 +208,13 @@ module.exports = {
                 id: idUser
             }
         });
+
         res.cookie('refreshToken', refreshToken, {
             httpOnly: true,
             maxAge: 24 * 60 * 60 * 1000
         });
-        res.status(200).json({
+
+        return res.status(200).json({
             status: res.statusCode,
             message: 'Berhasil Login',
             token: accessToken
@@ -175,7 +237,9 @@ module.exports = {
             message: "No User Found"
         });
         const idUser = user[0].id
-        await users.update({token: null}, {
+        await users.update({
+            token: null
+        }, {
             where: {
                 id: idUser
             }

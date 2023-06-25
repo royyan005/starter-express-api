@@ -52,9 +52,7 @@ module.exports = {
             deskripsi,
             nilai_min,
             nilai_max,
-            kode_klasifikasi,
-            createdBy,
-            updatedBy
+            kode_klasifikasi
         } = req.body;
         try {
             let klasifikasi_sub_matkul = await klasifikasi_sub_matkuls.create({
@@ -63,8 +61,8 @@ module.exports = {
                 nilai_min: nilai_min,
                 nilai_max: nilai_max,
                 kode_klasifikasi: kode_klasifikasi,
-                createdBy: createdBy,
-                updatedBy: updatedBy
+                createdBy: req.username,
+                updatedBy: req.username
             });
             return res.status(200).json({
                 status: true,
@@ -84,9 +82,7 @@ module.exports = {
             deskripsi,
             nilai_min,
             nilai_max,
-            kode_klasifikasi,
-            createdBy,
-            updatedBy
+            kode_klasifikasi
         } = req.body;
         try {
             let klasifikasi_sub_matkul = await klasifikasi_sub_matkuls.findOne({
@@ -108,8 +104,7 @@ module.exports = {
                 nilai_min: nilai_min,
                 nilai_max: nilai_max,
                 kode_klasifikasi: kode_klasifikasi,
-                createdBy: createdBy,
-                updatedBy: updatedBy
+                updatedBy: req.username
             });
             return res.status(200).json({
                 status: true,

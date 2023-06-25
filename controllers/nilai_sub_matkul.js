@@ -10,6 +10,8 @@ const {
     HurufMutu
 } = require("../helpers/helper");
 
+
+
 module.exports = {
     getAll: async (req, res, next) => {
         try {
@@ -56,19 +58,16 @@ module.exports = {
     },
     create: async (req, res, next) => {
         const {
-            user_id,
-            nilai = 0,
-            sub_matkul_id,
-            createdBy = "",
-            updatedBy = ""
+            nilai,
+            sub_matkul_id
         } = req.body;
+
+        const user_id = req.idUser;
 
         const {
             mahasiswa_id
         } = req.params
         try {
-            let average;
-            let nilai_sub_sub_matkul;
             let nilai_sub_matkul;
             let nilai_matkul;
             let nilai_matkul_exist
@@ -100,74 +99,82 @@ module.exports = {
                 }
             })
 
-            if (sub_matkul.is_sub_sub_matkul == false) {
-                if (!nilai_matkul_exist) {
-                    nilai_matkul = await nilai_matkuls.create({
-                        average: 0,
-                        huruf_mutu: "E",
-                        pembimbing_id: pembimbing.id,
-                        mahasiswa_id: mahasiswa_id,
-                        matkul_id: matkul.id,
-                        createdBy: "",
-                        updatedBy: ""
-                    })
-
-                    nilai_sub_matkul = await nilai_sub_matkuls.create({
-                        nilai: nilai,
-                        nilai_matkul_id: nilai_matkul.id,
-                        sub_matkul_id: sub_matkul_id,
-                        createdBy: createdBy,
-                        updatedBy: updatedBy
-                    });
-                } else {
-                    nilai_sub_matkul_exist = await nilai_sub_matkuls.findOne({
-                        where: {
-                            nilai_matkul_id: nilai_matkul_exist.id,
-                            sub_matkul_id: sub_matkul_id,
-                        }
-                    });
-
-                    if (nilai_sub_matkul_exist) {
-                        return res.status(400).json({
-                            status: false,
-                            message: 'data already exist!'
-                        });
-                    }
-
-                    nilai_sub_matkul = await nilai_sub_matkuls.create({
-                        nilai: nilai,
-                        nilai_matkul_id: nilai_matkul_exist.id,
-                        sub_matkul_id: sub_matkul_id,
-                        createdBy: createdBy,
-                        updatedBy: updatedBy
-                    });
-                }
-            } else {
-                nilai_sub_matkul = await nilai_sub_matkuls.findOne({
-                    where: {
-                        sub_matkul_id: sub_matkul.id,
-                        nilai_matkul_id: nilai_matkul_exist.id
-                    }
+            if (!nilai_matkul_exist) {
+                nilai_matkul = await nilai_matkuls.create({
+                    average: 0,
+                    huruf_mutu: "E",
+                    pembimbing_id: pembimbing.id,
+                    mahasiswa_id: mahasiswa_id,
+                    matkul_id: matkul.id,
+                    createdBy: req.username,
+                    updatedBy: req.username
                 })
 
-                nilai_sub_sub_matkul = await nilai_sub_sub_matkuls.findAll({
-                    where: {
-                        nilai_sub_matkul_id: nilai_sub_matkul.id
-                    }
+                nilai_sub_matkul = await nilai_sub_matkuls.create({
+                    nilai: nilai,
+                    nilai_matkul_id: nilai_matkul.id,
+                    sub_matkul_id: sub_matkul_id,
+                    createdBy: req.username,
+                    updatedBy: req.username
+                });
+
+                await nilai_matkul.update({
+                    average: nilai,
+                    huruf_mutu: HurufMutu(nilai)
                 })
 
-                let i = 0;
-                let total = 0;
-                while (nilai_sub_sub_matkul[i]) {
-                    total += nilai_sub_sub_matkul[i].nilai;
-                    i++
-                }
-                average = total / i
-
-                await nilai_sub_matkul.update({
-                    nilai: average
-                })
+                return res.status(200).json({
+                    status: true,
+                    message: 'create data success!',
+                    data: nilai_sub_matkul
+                });
             }
+
+            nilai_sub_matkul_exist = await nilai_sub_matkuls.findOne({
+                where: {
+                    nilai_matkul_id: nilai_matkul_exist.id,
+                    sub_matkul_id: sub_matkul_id,
+                }
+            });
+
+            if (nilai_sub_matkul_exist) {
+                return res.status(400).json({
+                    status: false,
+                    message: 'data already exist!'
+                });
+            }
+
+            nilai_sub_matkul = await nilai_sub_matkuls.create({
+                nilai: nilai,
+                nilai_matkul_id: nilai_matkul_exist.id,
+                sub_matkul_id: sub_matkul_id,
+                createdBy: req.username,
+                updatedBy: req.username
+            });
+
+            let getAllNilaiSubMatkul = await nilai_sub_matkuls.findAll({
+                where: {
+                    nilai_matkul_id: nilai_matkul_exist.id
+                }
+            })
+
+            let i = 0;
+            let totalNilaiSubMatkul = 0;
+            let averageNilaiSubMatkul = 0;
+
+            while (getAllNilaiSubMatkul[i]) {
+                totalNilaiSubMatkul += getAllNilaiSubMatkul[i].nilai;
+                i++
+            }
+
+            averageNilaiSubMatkul = totalNilaiSubMatkul / i
+
+            await nilai_matkul.update({
+                average: averageNilaiSubMatkul,
+                huruf_mutu: HurufMutu(averageNilaiSubMatkul),
+                updatedBy: req.username
+            })
+
             return res.status(200).json({
                 status: true,
                 message: 'create data success!',
@@ -179,11 +186,11 @@ module.exports = {
     },
     update: async (req, res, next) => {
         const {
-            user_id,
-            nilai = 0,
-            createdBy = "",
-            updatedBy = ""
+            nilai,
         } = req.body;
+
+        const user_id = req.idUser;
+
         const {
             id
         } = req.params
@@ -230,8 +237,7 @@ module.exports = {
 
             let updated = await nilai_sub_matkul.update({
                 nilai: nilai,
-                createdBy: createdBy,
-                updatedBy: updatedBy
+                updatedBy: req.username
             });
 
             let getAllNilaiSubMatkul = await nilai_sub_matkuls.findAll({
@@ -253,7 +259,8 @@ module.exports = {
 
             await nilai_matkul.update({
                 average: average,
-                huruf_mutu: HurufMutu(average)
+                huruf_mutu: HurufMutu(average),
+                updatedBy: req.username
             })
             return res.status(200).json({
                 status: true,
@@ -280,6 +287,22 @@ module.exports = {
                     status: false,
                     message: 'nilai_sub_matkul not found!',
                 });
+            }
+
+            let sub_matkul = sub_matkuls.findOne({
+                where: {
+                    id: nilai_sub_matkul.sub_matkul_id
+                }
+            })
+
+            if (sub_matkul.is_sub_sub_matkul == true) {
+                let nilai_sub_sub_matkul = await findAll({
+                    where: {
+                        nilai_sub_matkul_id: nilai_sub_matkul.id
+                    }
+                })
+
+                await nilai_sub_sub_matkul.destroy();
             }
 
             await nilai_sub_matkul.destroy();

@@ -51,9 +51,7 @@ module.exports = {
             matkul_id,
             deskripsi,
             kode_sub_matkul,
-            is_sub_sub_matkul,
-            createdBy,
-            updatedBy
+            is_sub_sub_matkul
         } = req.body;
         try {
             let sub_matkul = await sub_matkuls.create({
@@ -61,8 +59,8 @@ module.exports = {
                 deskripsi: deskripsi,
                 kode_sub_matkul: kode_sub_matkul,
                 is_sub_sub_matkul: is_sub_sub_matkul,
-                createdBy: createdBy,
-                updatedBy: updatedBy
+                createdBy: req.username,
+                updatedBy: req.username
             });
             return res.status(200).json({
                 status: true,
@@ -81,9 +79,7 @@ module.exports = {
             matkul_id,
             deskripsi,
             kode_sub_matkul,
-            is_sub_sub_matkul,
-            createdBy,
-            updatedBy
+            is_sub_sub_matkul
         } = req.body;
         try {
             let sub_matkul = await sub_matkuls.findOne({
@@ -104,8 +100,7 @@ module.exports = {
                 deskripsi: deskripsi,
                 kode_sub_matkul: kode_sub_matkul,
                 is_sub_sub_matkul: is_sub_sub_matkul,
-                createdBy: createdBy,
-                updatedBy: updatedBy
+                updatedBy: req.username
             });
             return res.status(200).json({
                 status: true,

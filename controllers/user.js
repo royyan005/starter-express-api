@@ -17,7 +17,7 @@ module.exports = {
             return res.status(200).json({
                 status: true,
                 message: 'get all data success!',
-                data: users
+                data: user
             });
         } catch (err) {
             next(err)
@@ -42,7 +42,7 @@ module.exports = {
             return res.status(200).json({
                 status: true,
                 message: 'get all data success!',
-                data: user1
+                data: user
             });
         } catch (err) {
             next(err)
@@ -55,10 +55,7 @@ module.exports = {
             password,
             rePassword,
             full_name,
-            token,
-            role,
-            createdBy,
-            updatedBy
+            role
         } = req.body
         try {
             let user = await users.findOne({
@@ -86,7 +83,6 @@ module.exports = {
                 username: username,
                 password: hashPassword,
                 full_name: full_name,
-                token: token,
                 role: role,
                 createdBy: req.username,
                 updatedBy: req.username
@@ -103,6 +99,82 @@ module.exports = {
         }
     },
 
+    update: async (req, res, next) => {
+        const {
+            username,
+            password,
+            rePassword,
+            full_name,
+            role
+        } = req.body
+
+        const {id} = req.params
+        try {
+            let user = await users.findOne({
+                where: {
+                    id: id
+                }
+            });
+            if (!user) {
+                return res.status(400).json({
+                    status: false,
+                    message: 'data not found',
+                })
+            }
+
+            if (password !== rePassword)
+                return res.status(400).json({
+                    status: false,
+                    message: 'Password dan rePassword tidak cocok !'
+                });
+
+            const salt = await bcrypt.genSalt(10);
+            const hashPassword = await bcrypt.hash(req.body.password, salt);
+
+            let update_user = await user.update({
+                username: username,
+                password: hashPassword,
+                full_name: full_name,
+                role: role,
+                updatedBy: req.username
+            })
+
+
+            return res.status(200).json({
+                status: true,
+                message: 'update data success!',
+                data: update_user
+            });
+        } catch (err) {
+            next(err)
+        }
+    },
+
+    delete: async (req, res, next) => {
+        const {id} = req.params
+        try {
+            let user = await users.findOne({
+                where: {
+                    id: id
+                }
+            });
+            if (!user) {
+                return res.status(400).json({
+                    status: false,
+                    message: 'data not found',
+                })
+            }
+
+            await user.destroy();
+            return res.status(200).json({
+                status: true,
+                message: 'delete user success!'
+            });
+        } catch (err) {
+            next(err)
+        }
+    },
+
     login: async (req, res) => {
         const refreshTokenCookie = req.cookies.refreshToken;
         if (refreshTokenCookie) {
@@ -111,7 +183,7 @@ module.exports = {
                     token: refreshTokenCookie
                 }
             });
-    
+
             if (user == '') {
                 return res.status(400).json({
                     status: res.statusCode,
@@ -173,7 +245,7 @@ module.exports = {
                 message: 'User tidak ditemukan'
             });
         }
-        
+
         const match = await bcrypt.compare(req.body.password, user[0].password);
         if (!match) {
             return res.status(403).json({

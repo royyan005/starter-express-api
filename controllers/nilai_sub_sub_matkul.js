@@ -57,10 +57,10 @@ module.exports = {
     },
     create: async (req, res, next) => {
         const {
-            user_id,
             nilai = 0,
             sub_sub_matkul_id
         } = req.body;
+        const user_id = req.idUser
         const {
             mahasiswa_id
         } = req.params
@@ -83,7 +83,8 @@ module.exports = {
 
             let sub_matkul = await sub_matkuls.findOne({
                 where: {
-                    id: sub_sub_matkul.sub_matkul_id
+                    id: sub_sub_matkul.sub_matkul_id,
+                    is_sub_sub_matkul: true
                 }
             })
 
@@ -106,24 +107,31 @@ module.exports = {
                     pembimbing_id: pembimbing.id,
                     mahasiswa_id: mahasiswa_id,
                     matkul_id: matkul.id,
-                    createdBy: "",
-                    updatedBy: ""
+                    createdBy: req.username,
+                    updatedBy: req.username
                 })
                 nilai_sub_matkul = await nilai_sub_matkuls.create({
                     sub_matkul_id: sub_matkul.id,
                     nilai_matkul_id: nilai_matkul.id,
                     nilai: 0,
-                    createdBy: "",
-                    updatedBy: ""
+                    createdBy: req.username,
+                    updatedBy: req.username
                 })
 
                 nilai_sub_sub_matkul = await nilai_sub_sub_matkuls.create({
                     nilai: nilai,
                     nilai_sub_matkul_id: nilai_sub_matkul.id,
                     sub_sub_matkul_id: sub_sub_matkul_id,
-                    createdBy: "",
-                    updatedBy: ""
+                    createdBy: req.username,
+                    updatedBy: req.username
                 });
+
+                return res.status(200).json({
+                    status: true,
+                    message: 'create data success!',
+                    data: nilai_sub_sub_matkul
+                });
+
             } else {
                 let nilai_sub_matkul_exist = await nilai_sub_matkuls.findOne({
                     where: {
@@ -136,17 +144,35 @@ module.exports = {
                         sub_matkul_id: sub_matkul.id,
                         nilai_matkul_id: nilai_matkul_exist.id,
                         nilai: 0,
-                        createdBy: "",
-                        updatedBy: ""
+                        createdBy: req.username,
+                        updatedBy: req.username
                     })
 
                     nilai_sub_sub_matkul = await nilai_sub_sub_matkuls.create({
                         nilai: nilai,
                         nilai_sub_matkul_id: nilai_sub_matkul.id,
                         sub_sub_matkul_id: sub_sub_matkul_id,
-                        createdBy: "",
-                        updatedBy: ""
+                        createdBy: req.username,
+                        updatedBy: req.username
                     });
+
+                    let get_all_nilai_sub_sub_matkul = await nilai_sub_sub_matkuls.findAll({
+                        where: {
+                            nilai_sub_matkul_id: nilai_sub_matkul.id
+                        }
+                    })
+    
+                    let i = 0;
+                    let total = 0;
+                    while (get_all_nilai_sub_sub_matkul[i]) {
+                        total += get_all_nilai_sub_sub_matkul[i].nilai;
+                        i++
+                    }
+                    average = total / i
+    
+                    await nilai_sub_matkul.update({
+                        nilai: average
+                    })
                 } else {
 
                     nilai_sub_sub_matkul_exist = await nilai_sub_sub_matkuls.findOne({
@@ -168,9 +194,28 @@ module.exports = {
                         nilai: nilai,
                         nilai_sub_matkul_id: nilai_sub_matkul_exist.id,
                         sub_sub_matkul_id: sub_sub_matkul_id,
-                        createdBy: "",
-                        updatedBy: ""
+                        createdBy: req.username,
+                        updatedBy: req.username
                     });
+
+                    let get_all_nilai_sub_sub_matkul = await nilai_sub_sub_matkuls.findAll({
+                        where: {
+                            nilai_sub_matkul_id: nilai_sub_matkul_exist.id
+                        }
+                    })
+    
+                    let i = 0;
+                    let total = 0;
+                    while (get_all_nilai_sub_sub_matkul[i]) {
+                        total += get_all_nilai_sub_sub_matkul[i].nilai;
+                        i++
+                    }
+                    average = total / i
+    
+                    await nilai_sub_matkul_exist.update({
+                        nilai: average,
+                        updatedBy: req.username
+                    })
                 }
             }
             return res.status(200).json({
@@ -187,11 +232,9 @@ module.exports = {
             id
         } = req.params
         const {
-            user_id,
-            nilai = 0,
-            createdBy = "",
-            updatedBy = ""
+            nilai = 0
         } = req.body;
+        const user_id = req.idUser
         try {
             let nilai_sub_sub_matkul = await nilai_sub_sub_matkuls.findOne({
                 where: {
@@ -207,19 +250,19 @@ module.exports = {
             }
 
             let nilai_sub_matkul = await nilai_sub_matkuls.findOne({
-                where:{
+                where: {
                     id: nilai_sub_sub_matkul.nilai_sub_matkul_id
                 }
             })
 
             let nilai_matkul = await nilai_matkuls.findOne({
-                where:{
+                where: {
                     id: nilai_sub_matkul.nilai_matkul_id
                 }
             })
 
             let pembimbing = await pembimbings.findOne({
-                where:{
+                where: {
                     user_id: user_id,
                     mahasiswa_id: nilai_matkul.mahasiswa_id
                 }
@@ -241,12 +284,11 @@ module.exports = {
 
             let updated = await nilai_sub_sub_matkul.update({
                 nilai: nilai,
-                createdBy: createdBy,
-                updatedBy: updatedBy
+                updatedBy: req.username
             });
 
             let getAllNilaiSubSubMatkul = await nilai_sub_sub_matkuls.findAll({
-                where:{
+                where: {
                     nilai_sub_matkul_id: nilai_sub_matkul.id
                 }
             })
@@ -264,7 +306,8 @@ module.exports = {
 
             await nilai_sub_matkul.update({
                 nilai: average,
-                huruf_mutu: HurufMutu(average)
+                huruf_mutu: HurufMutu(average),
+                updatedBy: req.username
             })
 
             let getAllNilaiSubMatkul = await nilai_sub_matkuls.findAll({
@@ -286,7 +329,8 @@ module.exports = {
 
             await nilai_matkul.update({
                 average: average,
-                huruf_mutu: HurufMutu(average)
+                huruf_mutu: HurufMutu(average),
+                updatedBy: req.username
             })
 
             return res.status(200).json({

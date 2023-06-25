@@ -50,17 +50,27 @@ module.exports = {
         const {
             full_name,
             npm,
-            jurusan,
-            createdBy,
-            updatedBy
+            jurusan
         } = req.body;
+        
         try {
+            let mahasiswaExist = await mahasiswas.findOne({
+                where:{
+                    npm: npm
+                }
+            })
+            if(mahasiswaExist){
+                return res.status(400).json({
+                    status: false,
+                    message: 'mahasiswa already exist!'
+                });
+            }
             let mahasiswa = await mahasiswas.create({
                 full_name: full_name,
                 npm: npm,
                 jurusan: jurusan,
-                createdBy: createdBy,
-                updatedBy: updatedBy
+                createdBy: req.username,
+                updatedBy: req.username
             });
             return res.status(200).json({
                 status: true,
@@ -78,9 +88,7 @@ module.exports = {
         const {
             full_name,
             npm,
-            jurusan,
-            createdBy,
-            updatedBy
+            jurusan
         } = req.body;
         try {
             let mahasiswa = await mahasiswas.findOne({
@@ -100,8 +108,7 @@ module.exports = {
                 full_name: full_name,
                 npm: npm,
                 jurusan: jurusan,
-                createdBy: createdBy,
-                updatedBy: updatedBy
+                updatedBy: req.username
             });
             return res.status(200).json({
                 status: true,

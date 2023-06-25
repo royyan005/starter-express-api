@@ -50,12 +50,21 @@ module.exports = {
         const {
             user_id,
             mahasiswa_id,
-            jenis_role,
-            createdBy,
-            updatedBy
+            jenis_role
         } = req.body;
         try {
 
+            let mahasiswaExist = await pembimbings.findAll({
+                where: {
+                    mahasiswa_id: mahasiswa_id
+                }
+            })
+            if (mahasiswaExist[0]) {
+                return res.status(400).json({
+                    status: false,
+                    message: 'mahasiswa not found!'
+                })
+            }
             let pembimbingExist = await pembimbings.findAll({
                 where: {
                     user_id: user_id,
@@ -88,8 +97,8 @@ module.exports = {
                 user_id: user_id,
                 mahasiswa_id: mahasiswa_id,
                 jenis_role: jenis_role,
-                createdBy: createdBy,
-                updatedBy: updatedBy
+                createdBy: req.username,
+                updatedBy: req.username
             });
             return res.status(200).json({
                 status: true,
@@ -107,9 +116,7 @@ module.exports = {
         const {
             user_id,
             mahasiswa_id,
-            jenis_role,
-            createdBy,
-            updatedBy
+            jenis_role
         } = req.body;
         try {
             let pembimbing = await pembimbings.findOne({
@@ -129,8 +136,7 @@ module.exports = {
                 user_id: user_id,
                 mahasiswa_id: mahasiswa_id,
                 jenis_role: jenis_role,
-                createdBy: createdBy,
-                updatedBy: updatedBy
+                updatedBy: req.username
             });
             return res.status(200).json({
                 status: true,

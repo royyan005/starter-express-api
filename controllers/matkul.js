@@ -50,12 +50,10 @@ module.exports = {
         const {
             kode_matkul,
             deskripsi,
-            sks,
-            createdBy,
-            updatedBy
+            sks
         } = req.body;
         try {
-            let exist = await matkuls.findAll({
+            let exist = await matkuls.findOne({
                 where: {
                     kode_matkul: kode_matkul,
                     deskripsi: deskripsi,
@@ -74,8 +72,8 @@ module.exports = {
                 kode_matkul: kode_matkul,
                 deskripsi: deskripsi,
                 sks: sks,
-                createdBy: createdBy,
-                updatedBy: updatedBy
+                createdBy: req.username,
+                updatedBy: req.username
             });
             return res.status(200).json({
                 status: true,
@@ -93,9 +91,7 @@ module.exports = {
         const {
             kode_matkul,
             deskripsi,
-            sks,
-            createdBy,
-            updatedBy
+            sks
         } = req.body;
         try {
             let matkul = await matkuls.findOne({
@@ -115,8 +111,7 @@ module.exports = {
                 kode_matkul: kode_matkul,
                 deskripsi: deskripsi,
                 sks: sks,
-                createdBy: createdBy,
-                updatedBy: updatedBy
+                updatedBy: req.username
             });
             return res.status(200).json({
                 status: true,

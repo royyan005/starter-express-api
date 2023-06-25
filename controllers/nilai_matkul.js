@@ -1,12 +1,9 @@
 const {
     nilai_matkuls,
     nilai_sub_matkuls,
-    pembimbings
-} = require("../models")
-
-const {
-    HurufMutu
-} = require("../helpers/helper");
+    sub_matkuls,
+    nilai_sub_sub_matkuls
+} = require("../models");
 
 module.exports = {
     getAll: async (req, res, next) => {
@@ -52,104 +49,104 @@ module.exports = {
             next(err)
         }
     },
-    create: async (req, res, next) => {
-        const {mahasiswa_id} = req.params
-        const {
-            user_id,
-            matkul_id
-        } = req.body;
-        try {
+    // create: async (req, res, next) => {
+    //     const {mahasiswa_id} = req.params
+    //     const {
+    //         matkul_id
+    //     } = req.body;
+    //     const user_id = req.idUser;
+    //     try {
 
-            let pembimbing = await pembimbings.findOne({
-                where:{
-                    user_id: user_id,
-                    mahasiswa_id: mahasiswa_id
-                }
-            })
-            let nilai_matkul = await nilai_matkuls.findOne({
-                where:{
-                    mahasiswa_id: mahasiswa_id,
-                    pembimbing_id: pembimbing.id,
-                    matkul_id: matkul_id
-                }
-            })
+    //         let pembimbing = await pembimbings.findOne({
+    //             where:{
+    //                 user_id: user_id,
+    //                 mahasiswa_id: mahasiswa_id
+    //             }
+    //         })
+    //         let nilai_matkul = await nilai_matkuls.findOne({
+    //             where:{
+    //                 mahasiswa_id: mahasiswa_id,
+    //                 pembimbing_id: pembimbing.id,
+    //                 matkul_id: matkul_id
+    //             }
+    //         })
 
-            let nilai_sub_matkul = await nilai_sub_matkuls.findAll({
-                where:{
-                    nilai_matkul_id: nilai_matkul.id
-                }
-            })
+    //         let nilai_sub_matkul = await nilai_sub_matkuls.findAll({
+    //             where:{
+    //                 nilai_matkul_id: nilai_matkul.id
+    //             }
+    //         })
 
-            let i = 0;
-            let total = 0;
-            let average = 0;
+    //         let i = 0;
+    //         let total = 0;
+    //         let average = 0;
 
-            while(nilai_sub_matkul[i]){
-                total += nilai_sub_matkul[i].nilai;
-                i++
-            }
+    //         while(nilai_sub_matkul[i]){
+    //             total += nilai_sub_matkul[i].nilai;
+    //             i++
+    //         }
 
-            average = total/i
+    //         average = total/i
 
-            await nilai_matkul.update({
-                average: average,
-                huruf_mutu: HurufMutu(average)
-            })
+    //         await nilai_matkul.update({
+    //             average: average,
+    //             huruf_mutu: HurufMutu(average)
+    //         })
 
-            return res.status(200).json({
-                status: true,
-                message: 'create data success!',
-                data: nilai_matkul
-            });
-        } catch (err) {
-            next(err)
-        }
-    },
-    update: async (req, res, next) => {
-        const {
-            id
-        } = req.params
-        const {
-            average,
-            huruf_mutu,
-            mahasiswa_id,
-            pembimbing_id,
-            matkul_id,
-            createdBy,
-            updatedBy
-        } = req.body;
-        try {
-            let nilai_matkul = await nilai_matkuls.findOne({
-                where: {
-                    id: id
-                }
-            });
+    //         return res.status(200).json({
+    //             status: true,
+    //             message: 'create data success!',
+    //             data: nilai_matkul
+    //         });
+    //     } catch (err) {
+    //         next(err)
+    //     }
+    // },
+    // update: async (req, res, next) => {
+    //     const {
+    //         id
+    //     } = req.params
+    //     const {
+    //         average,
+    //         huruf_mutu,
+    //         mahasiswa_id,
+    //         pembimbing_id,
+    //         matkul_id,
+    //         createdBy,
+    //         updatedBy
+    //     } = req.body;
+    //     try {
+    //         let nilai_matkul = await nilai_matkuls.findOne({
+    //             where: {
+    //                 id: id
+    //             }
+    //         });
 
-            if (!nilai_matkul) {
-                return res.status(400).json({
-                    status: false,
-                    message: 'nilai_matkul not found!',
-                });
-            }
+    //         if (!nilai_matkul) {
+    //             return res.status(400).json({
+    //                 status: false,
+    //                 message: 'nilai_matkul not found!',
+    //             });
+    //         }
 
-            let updated = await nilai_matkul.update({
-                average: average,
-                huruf_mutu: huruf_mutu,
-                mahasiswa_id: mahasiswa_id,
-                pembimbing_id: pembimbing_id,
-                matkul_id: matkul_id,
-                createdBy: createdBy,
-                updatedBy: updatedBy
-            });
-            return res.status(200).json({
-                status: true,
-                message: 'update data success!',
-                data: updated
-            });
-        } catch (err) {
-            next(err)
-        }
-    },
+    //         let updated = await nilai_matkul.update({
+    //             average: average,
+    //             huruf_mutu: huruf_mutu,
+    //             mahasiswa_id: mahasiswa_id,
+    //             pembimbing_id: pembimbing_id,
+    //             matkul_id: matkul_id,
+    //             createdBy: createdBy,
+    //             updatedBy: updatedBy
+    //         });
+    //         return res.status(200).json({
+    //             status: true,
+    //             message: 'update data success!',
+    //             data: updated
+    //         });
+    //     } catch (err) {
+    //         next(err)
+    //     }
+    // },
     delete: async (req, res, next) => {
         const {
             id
@@ -166,6 +163,32 @@ module.exports = {
                     status: false,
                     message: 'nilai_matkul not found!',
                 });
+            }
+
+            let nilai_sub_matkul = await nilai_sub_matkuls.findAll({
+                where: {
+                    nilai_matkul_id: nilai_matkul.id
+                }
+            })
+
+            let i = 0
+            while(nilai_sub_matkul[i]){
+                let sub_matkul = await sub_matkuls.findOne({
+                    where:{
+                        id: nilai_sub_matkul[i].sub_matkul_id
+                    }
+                })
+                if(sub_matkul.is_sub_sub_matkul == true){
+                    let nilai_sub_sub_matkul = await nilai_sub_sub_matkuls.findAll({
+                        where: {
+                            nilai_sub_matkul_id: nilai_sub_matkul[i].id
+                        }
+                    })
+
+                    await nilai_sub_sub_matkul.destroy()
+                }
+                await nilai_sub_matkul[i].destroy();
+                i++
             }
 
             await nilai_matkul.destroy();

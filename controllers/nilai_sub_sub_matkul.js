@@ -57,7 +57,7 @@ module.exports = {
     },
     create: async (req, res, next) => {
         const {
-            nilai = 0,
+            nilai,
             sub_sub_matkul_id
         } = req.body;
         const user_id = req.idUser

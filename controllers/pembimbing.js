@@ -1,5 +1,6 @@
 const {
-    pembimbings
+    pembimbings,
+    mahasiswas,
 } = require("../models")
 
 module.exports = {
@@ -54,12 +55,12 @@ module.exports = {
         } = req.body;
         try {
 
-            let mahasiswaExist = await pembimbings.findAll({
+            let mahasiswaExist = await mahasiswas.findAll({
                 where: {
-                    mahasiswa_id: mahasiswa_id
+                    id: mahasiswa_id
                 }
             })
-            if (mahasiswaExist[0]) {
+            if (!mahasiswaExist[0]) {
                 return res.status(400).json({
                     status: false,
                     message: 'mahasiswa not found!'
@@ -124,11 +125,23 @@ module.exports = {
                     id: id
                 }
             });
-
             if (!pembimbing) {
                 return res.status(400).json({
                     status: false,
                     message: 'data not found!',
+                });
+            }
+            let roleExist = await pembimbings.findOne({
+                where: {
+                    mahasiswa_id: mahasiswa_id,
+                    jenis_role: jenis_role
+                }
+            });
+
+            if (roleExist) {
+                return res.status(400).json({
+                    status: false,
+                    message: 'sudah memiliki pembimbing/penguji',
                 });
             }
 

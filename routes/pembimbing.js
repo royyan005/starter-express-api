@@ -4,10 +4,10 @@ const controllers = require('../controllers/index')
 const middleware = require('../middleware/verifyToken')
 
 /* GET users listing. */
-router.get('/', controllers.mahasiswa.getAll);
-router.get('/:id', controllers.mahasiswa.getById);
+router.get('/', controllers.pembimbing.getAll);
+router.get('/:id', controllers.pembimbing.getById);
 router.post('/', middleware.isLogin, controllers.pembimbing.create);
-router.get('/:user_id/view/:mahasiswa_id', controllers.form.getAllNilaiByMahasiswa);
-router.delete('/:id', middleware.isLogin, controllers.mahasiswa.delete);
+router.put('/:id', middleware.isLogin, controllers.pembimbing.update);
+router.delete('/:id', middleware.isLogin, controllers.pembimbing.delete);
 
 module.exports = router;

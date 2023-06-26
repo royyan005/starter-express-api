@@ -30,17 +30,35 @@ module.exports = {
                     id: user_id
                 }
             });
+            if(!user){
+                return res.status(400).json({
+                    status: false,
+                    message: 'user not found!'
+                });
+            }
             let mahasiswa = await mahasiswas.findOne({
                 where: {
                     id: mahasiswa_id
                 }
             });
+            if(!mahasiswa){
+                return res.status(400).json({
+                    status: false,
+                    message: 'mahasiswa not found!'
+                });
+            }
             let pembimbing = await pembimbings.findOne({
                 where: {
                     user_id: user.id,
                     mahasiswa_id: mahasiswa.id
                 }
             })
+            if(!pembimbing){
+                return res.status(400).json({
+                    status: false,
+                    message: 'pembimbing not found!'
+                });
+            }
             let nilai_matkul;
             let nilai_sub_matkul;
             let nilai_sub_sub_matkul;
@@ -78,8 +96,7 @@ module.exports = {
                     nilai_sub_matkul = await nilai_sub_matkuls.findOne({
                         where: {
                             sub_matkul_id: sub_matkul[j].id,
-                            nilai_matkul_id: nilai_matkul.id,
-                            mahasiswa_id: mahasiswa_id
+                            nilai_matkul_id: nilai_matkul.id
                         }
                     })
                     nilai[i].sub[j] = {
@@ -132,9 +149,11 @@ module.exports = {
 
     // FORM INPUT NILAI
     postNilai: async (req, res, next) => {
+        const user_id = req.idUser
         const {
-            mahasiswa_id,
-            user_id,
+            mahasiswa_id
+        } = req.params
+        const {
             nilai1_1,
             nilai1_2,
             nilai1_3,
@@ -225,8 +244,8 @@ module.exports = {
                 pembimbing_id: pembimbing.id,
                 mahasiswa_id: mahasiswa_id,
                 matkul_id: matkul1.id,
-                createdBy: "",
-                updatedBy: ""
+                createdBy: req.username,
+                updatedBy: req.username
             })
 
             let sub_matkul1_1 = await sub_matkuls.findOne({
@@ -240,8 +259,8 @@ module.exports = {
                 mahasiswa_id: mahasiswa_id,
                 nilai_matkul_id: nilai_matkul1.id,
                 nilai: nilai1_1,
-                createdBy: "",
-                updatedBy: ""
+                createdBy: req.username,
+                updatedBy: req.username
             })
 
             let sub_matkul1_2 = await sub_matkuls.findOne({
@@ -255,8 +274,8 @@ module.exports = {
                 mahasiswa_id: mahasiswa_id,
                 nilai_matkul_id: nilai_matkul1.id,
                 nilai: nilai1_2,
-                createdBy: "",
-                updatedBy: ""
+                createdBy: req.username,
+                updatedBy: req.username
             })
 
             let sub_matkul1_3 = await sub_matkuls.findOne({
@@ -270,8 +289,8 @@ module.exports = {
                 mahasiswa_id: mahasiswa_id,
                 nilai_matkul_id: nilai_matkul1.id,
                 nilai: nilai1_3,
-                createdBy: "",
-                updatedBy: ""
+                createdBy: req.username,
+                updatedBy: req.username
             })
 
             let sub_matkul1_4 = await sub_matkuls.findOne({
@@ -285,8 +304,8 @@ module.exports = {
                 mahasiswa_id: mahasiswa_id,
                 nilai_matkul_id: nilai_matkul1.id,
                 nilai: nilai1_4,
-                createdBy: "",
-                updatedBy: ""
+                createdBy: req.username,
+                updatedBy: req.username
             })
 
             let avg_nilai_matkul1 = (nilai1_1 + nilai1_2 + nilai1_3 + nilai1_4) / 4;
@@ -295,8 +314,7 @@ module.exports = {
             let updated_nilai_matkul1 = await nilai_matkul1.update({
                 average: avg_nilai_matkul1,
                 huruf_mutu: huruf_mutu_matkul1,
-                createdBy: "",
-                updatedBy: ""
+                updatedBy: req.username
             })
 
             // MATKUL 2
@@ -313,8 +331,8 @@ module.exports = {
                 pembimbing_id: pembimbing.id,
                 mahasiswa_id: mahasiswa_id,
                 matkul_id: matkul2.id,
-                createdBy: "",
-                updatedBy: ""
+                createdBy: req.username,
+                updatedBy: req.username
             })
 
             let sub_matkul2_1 = await sub_matkuls.findOne({
@@ -328,8 +346,8 @@ module.exports = {
                 mahasiswa_id: mahasiswa_id,
                 nilai_matkul_id: nilai_matkul2.id,
                 nilai: nilai2_1,
-                createdBy: "",
-                updatedBy: ""
+                createdBy: req.username,
+                updatedBy: req.username
             })
 
             let sub_matkul2_2 = await sub_matkuls.findOne({
@@ -343,8 +361,8 @@ module.exports = {
                 mahasiswa_id: mahasiswa_id,
                 nilai_matkul_id: nilai_matkul2.id,
                 nilai: nilai2_2,
-                createdBy: "",
-                updatedBy: ""
+                createdBy: req.username,
+                updatedBy: req.username
             })
 
             let sub_matkul2_3 = await sub_matkuls.findOne({
@@ -358,8 +376,8 @@ module.exports = {
                 mahasiswa_id: mahasiswa_id,
                 nilai_matkul_id: nilai_matkul2.id,
                 nilai: nilai2_3,
-                createdBy: "",
-                updatedBy: ""
+                createdBy: req.username,
+                updatedBy: req.username
             })
 
             let avg_nilai_matkul2 = (nilai2_1 + nilai2_2 + nilai2_3) / 3;
@@ -368,8 +386,7 @@ module.exports = {
             let updated_nilai_matkul2 = await nilai_matkul2.update({
                 average: avg_nilai_matkul2,
                 huruf_mutu: huruf_mutu_matkul2,
-                createdBy: "",
-                updatedBy: ""
+                updatedBy: req.username
             })
 
             // MATKUL 3
@@ -386,8 +403,8 @@ module.exports = {
                 pembimbing_id: pembimbing.id,
                 mahasiswa_id: mahasiswa_id,
                 matkul_id: matkul3.id,
-                createdBy: "",
-                updatedBy: ""
+                createdBy: req.username,
+                updatedBy: req.username
             })
 
             let sub_matkul3_1 = await sub_matkuls.findOne({
@@ -401,8 +418,8 @@ module.exports = {
                 mahasiswa_id: mahasiswa_id,
                 nilai_matkul_id: nilai_matkul3.id,
                 nilai: nilai3_1,
-                createdBy: "",
-                updatedBy: ""
+                createdBy: req.username,
+                updatedBy: req.username
             })
 
             let sub_matkul3_2 = await sub_matkuls.findOne({
@@ -416,8 +433,8 @@ module.exports = {
                 mahasiswa_id: mahasiswa_id,
                 nilai_matkul_id: nilai_matkul3.id,
                 nilai: 0,
-                createdBy: "",
-                updatedBy: ""
+                createdBy: req.username,
+                updatedBy: req.username
             })
 
             let sub_sub_matkul3_2_1 = await sub_sub_matkuls.findOne({
@@ -431,8 +448,8 @@ module.exports = {
                 mahasiswa_id: mahasiswa_id,
                 nilai_sub_matkul_id: nilai_sub_matkul3_2.id,
                 nilai: nilai3_2_1,
-                createdBy: "",
-                updatedBy: ""
+                createdBy: req.username,
+                updatedBy: req.username
             })
 
             let sub_sub_matkul3_2_2 = await sub_sub_matkuls.findOne({
@@ -446,8 +463,8 @@ module.exports = {
                 mahasiswa_id: mahasiswa_id,
                 nilai_sub_matkul_id: nilai_sub_matkul3_2.id,
                 nilai: nilai3_2_2,
-                createdBy: "",
-                updatedBy: ""
+                createdBy: req.username,
+                updatedBy: req.username
             })
 
             let sub_sub_matkul3_2_3 = await sub_sub_matkuls.findOne({
@@ -461,8 +478,8 @@ module.exports = {
                 mahasiswa_id: mahasiswa_id,
                 nilai_sub_matkul_id: nilai_sub_matkul3_2.id,
                 nilai: nilai3_2_3,
-                createdBy: "",
-                updatedBy: ""
+                createdBy: req.username,
+                updatedBy: req.username
             })
 
             let sub_sub_matkul3_2_4 = await sub_sub_matkuls.findOne({
@@ -476,15 +493,14 @@ module.exports = {
                 mahasiswa_id: mahasiswa_id,
                 nilai_sub_matkul_id: nilai_sub_matkul3_2.id,
                 nilai: nilai3_2_4,
-                createdBy: "",
-                updatedBy: ""
+                createdBy: req.username,
+                updatedBy: req.username
             })
 
             let avg_nilai_sub_matkul3_2 = (nilai3_2_1 + nilai3_2_2 + nilai3_2_3 + nilai3_2_4) / 4;
             let updated_nilai_sub_matkul3_2 = await nilai_sub_matkul3_2.update({
                 nilai: avg_nilai_sub_matkul3_2,
-                createdBy: "",
-                updatedBy: ""
+                updatedBy: req.username
             })
 
             let avg_nilai_matkul3 = (nilai3_1 + avg_nilai_sub_matkul3_2) / 2;
@@ -493,8 +509,7 @@ module.exports = {
             let updated_nilai_matkul3 = await nilai_matkul3.update({
                 average: avg_nilai_matkul3,
                 huruf_mutu: huruf_mutu_matkul3,
-                createdBy: "",
-                updatedBy: ""
+                updatedBy: req.username
             })
 
             // MATKUL 4
@@ -511,8 +526,8 @@ module.exports = {
                 pembimbing_id: pembimbing.id,
                 mahasiswa_id: mahasiswa_id,
                 matkul_id: matkul4.id,
-                createdBy: "",
-                updatedBy: ""
+                createdBy: req.username,
+                updatedBy: req.username
             })
 
             let sub_matkul4_1 = await sub_matkuls.findOne({
@@ -526,8 +541,8 @@ module.exports = {
                 mahasiswa_id: mahasiswa_id,
                 nilai_matkul_id: nilai_matkul4.id,
                 nilai: 0,
-                createdBy: "",
-                updatedBy: ""
+                createdBy: req.username,
+                updatedBy: req.username
             })
 
             let sub_sub_matkul4_1_1 = await sub_sub_matkuls.findOne({
@@ -541,8 +556,8 @@ module.exports = {
                 mahasiswa_id: mahasiswa_id,
                 nilai_sub_matkul_id: nilai_sub_matkul4_1.id,
                 nilai: nilai4_1_1,
-                createdBy: "",
-                updatedBy: ""
+                createdBy: req.username,
+                updatedBy: req.username
             })
 
             let sub_sub_matkul4_1_2 = await sub_sub_matkuls.findOne({
@@ -556,8 +571,8 @@ module.exports = {
                 mahasiswa_id: mahasiswa_id,
                 nilai_sub_matkul_id: nilai_sub_matkul4_1.id,
                 nilai: nilai4_1_2,
-                createdBy: "",
-                updatedBy: ""
+                createdBy: req.username,
+                updatedBy: req.username
             })
 
             let sub_sub_matkul4_1_3 = await sub_sub_matkuls.findOne({
@@ -571,8 +586,8 @@ module.exports = {
                 mahasiswa_id: mahasiswa_id,
                 nilai_sub_matkul_id: nilai_sub_matkul4_1.id,
                 nilai: nilai4_1_3,
-                createdBy: "",
-                updatedBy: ""
+                createdBy: req.username,
+                updatedBy: req.username
             })
 
             let sub_sub_matkul4_1_4 = await sub_sub_matkuls.findOne({
@@ -586,15 +601,14 @@ module.exports = {
                 mahasiswa_id: mahasiswa_id,
                 nilai_sub_matkul_id: nilai_sub_matkul4_1.id,
                 nilai: nilai4_1_4,
-                createdBy: "",
-                updatedBy: ""
+                createdBy: req.username,
+                updatedBy: req.username
             })
 
             let avg_nilai_sub_matkul4_1 = (nilai4_1_1 + nilai4_1_2 + nilai4_1_3 + nilai4_1_4) / 4;
             let updated_nilai_sub_matkul4_1 = await nilai_sub_matkul4_1.update({
                 nilai: avg_nilai_sub_matkul4_1,
-                createdBy: "",
-                updatedBy: ""
+                updatedBy: req.username
             })
 
             let huruf_mutu_matkul4 = HurufMutu(avg_nilai_sub_matkul4_1);
@@ -602,8 +616,7 @@ module.exports = {
             let updated_nilai_matkul4 = await nilai_matkul4.update({
                 average: avg_nilai_sub_matkul4_1,
                 huruf_mutu: huruf_mutu_matkul4,
-                createdBy: "",
-                updatedBy: ""
+                updatedBy: req.username
             })
 
             // MATKUL 5
@@ -620,8 +633,8 @@ module.exports = {
                 pembimbing_id: pembimbing.id,
                 mahasiswa_id: mahasiswa_id,
                 matkul_id: matkul5.id,
-                createdBy: "",
-                updatedBy: ""
+                createdBy: req.username,
+                updatedBy: req.username
             })
 
             let sub_matkul5_1 = await sub_matkuls.findOne({
@@ -635,8 +648,8 @@ module.exports = {
                 mahasiswa_id: mahasiswa_id,
                 nilai_matkul_id: nilai_matkul5.id,
                 nilai: nilai5_1,
-                createdBy: "",
-                updatedBy: ""
+                createdBy: req.username,
+                updatedBy: req.username
             })
 
             let sub_matkul5_2 = await sub_matkuls.findOne({
@@ -650,8 +663,8 @@ module.exports = {
                 mahasiswa_id: mahasiswa_id,
                 nilai_matkul_id: nilai_matkul5.id,
                 nilai: nilai5_2,
-                createdBy: "",
-                updatedBy: ""
+                createdBy: req.username,
+                updatedBy: req.username
             })
 
             let sub_matkul5_3 = await sub_matkuls.findOne({
@@ -665,8 +678,8 @@ module.exports = {
                 mahasiswa_id: mahasiswa_id,
                 nilai_matkul_id: nilai_matkul5.id,
                 nilai: nilai5_3,
-                createdBy: "",
-                updatedBy: ""
+                createdBy: req.username,
+                updatedBy: req.username
             })
 
             let avg_nilai_matkul5 = (nilai5_1 + nilai5_2 + nilai5_3) / 3;
@@ -675,8 +688,7 @@ module.exports = {
             let updated_nilai_matkul5 = await nilai_matkul5.update({
                 average: avg_nilai_matkul5,
                 huruf_mutu: huruf_mutu_matkul5,
-                createdBy: "",
-                updatedBy: ""
+                updatedBy: req.username
             })
 
             // MATKUL 6
@@ -693,8 +705,8 @@ module.exports = {
                 pembimbing_id: pembimbing.id,
                 mahasiswa_id: mahasiswa_id,
                 matkul_id: matkul6.id,
-                createdBy: "",
-                updatedBy: ""
+                createdBy: req.username,
+                updatedBy: req.username
             })
 
             let sub_matkul6_1 = await sub_matkuls.findOne({
@@ -708,8 +720,8 @@ module.exports = {
                 mahasiswa_id: mahasiswa_id,
                 nilai_matkul_id: nilai_matkul6.id,
                 nilai: nilai6_1,
-                createdBy: "",
-                updatedBy: ""
+                createdBy: req.username,
+                updatedBy: req.username
             })
 
             let huruf_mutu_matkul6 = HurufMutu(nilai6_1);
@@ -717,8 +729,7 @@ module.exports = {
             let updated_nilai_matkul6 = await nilai_matkul6.update({
                 average: nilai6_1,
                 huruf_mutu: huruf_mutu_matkul6,
-                createdBy: "",
-                updatedBy: ""
+                updatedBy: req.username
             })
 
             return res.status(200).json({
@@ -766,8 +777,8 @@ module.exports = {
         const {
             mahasiswa_id
         } = req.params
+        const user_id = req.idUser
         const {
-            user_id,
             nilai1_1,
             nilai1_2,
             nilai1_3,
@@ -841,14 +852,13 @@ module.exports = {
             let nilai_sub_matkul1_1 = await nilai_sub_matkuls.findOne({
                 where: {
                     sub_matkul_id: sub_matkul1_1.id,
-                    mahasiswa_id: mahasiswa_id,
                     nilai_matkul_id: nilai_matkul1.id,
                 }
             })
 
             await nilai_sub_matkul1_1.update({
                 nilai: nilai1_1,
-                updatedBy: ""
+                updatedBy: req.username
             })
 
             let sub_matkul1_2 = await sub_matkuls.findOne({
@@ -860,14 +870,13 @@ module.exports = {
             let nilai_sub_matkul1_2 = await nilai_sub_matkuls.findOne({
                 where: {
                     sub_matkul_id: sub_matkul1_2.id,
-                    mahasiswa_id: mahasiswa_id,
                     nilai_matkul_id: nilai_matkul1.id,
                 }
             })
 
             await nilai_sub_matkul1_2.update({
                 nilai: nilai1_2,
-                updatedBy: ""
+                updatedBy: req.username
             })
 
             let sub_matkul1_3 = await sub_matkuls.findOne({
@@ -879,14 +888,13 @@ module.exports = {
             let nilai_sub_matkul1_3 = await nilai_sub_matkuls.findOne({
                 where: {
                     sub_matkul_id: sub_matkul1_3.id,
-                    mahasiswa_id: mahasiswa_id,
                     nilai_matkul_id: nilai_matkul1.id,
                 }
             })
 
             await nilai_sub_matkul1_3.update({
                 nilai: nilai1_3,
-                updatedBy: ""
+                updatedBy: req.username
             })
 
             let sub_matkul1_4 = await sub_matkuls.findOne({
@@ -898,14 +906,13 @@ module.exports = {
             let nilai_sub_matkul1_4 = await nilai_sub_matkuls.findOne({
                 where: {
                     sub_matkul_id: sub_matkul1_4.id,
-                    mahasiswa_id: mahasiswa_id,
                     nilai_matkul_id: nilai_matkul1.id,
                 }
             })
 
             await nilai_sub_matkul1_4.update({
                 nilai: nilai1_4,
-                updatedBy: ""
+                updatedBy: req.username
             })
 
             let avg_nilai_matkul1 = (nilai1_1 + nilai1_2 + nilai1_3 + nilai1_4) / 4;
@@ -914,7 +921,7 @@ module.exports = {
             let updated_nilai_matkul1 = await nilai_matkul1.update({
                 average: avg_nilai_matkul1,
                 huruf_mutu: huruf_mutu_matkul1,
-                updatedBy: ""
+                updatedBy: req.username
             })
 
             // MATKUL 2
@@ -942,14 +949,13 @@ module.exports = {
             let nilai_sub_matkul2_1 = await nilai_sub_matkuls.findOne({
                 where: {
                     sub_matkul_id: sub_matkul2_1.id,
-                    mahasiswa_id: mahasiswa_id,
                     nilai_matkul_id: nilai_matkul2.id
                 }
             })
 
             await nilai_sub_matkul2_1.update({
                 nilai: nilai2_1,
-                updatedBy: ""
+                updatedBy: req.username
             })
 
             let sub_matkul2_2 = await sub_matkuls.findOne({
@@ -961,14 +967,13 @@ module.exports = {
             let nilai_sub_matkul2_2 = await nilai_sub_matkuls.findOne({
                 where: {
                     sub_matkul_id: sub_matkul2_2.id,
-                    mahasiswa_id: mahasiswa_id,
                     nilai_matkul_id: nilai_matkul2.id
                 }
             })
 
             await nilai_sub_matkul2_2.update({
                 nilai: nilai2_2,
-                updatedBy: ""
+                updatedBy: req.username
             })
 
             let sub_matkul2_3 = await sub_matkuls.findOne({
@@ -980,14 +985,13 @@ module.exports = {
             let nilai_sub_matkul2_3 = await nilai_sub_matkuls.findOne({
                 where: {
                     sub_matkul_id: sub_matkul2_3.id,
-                    mahasiswa_id: mahasiswa_id,
                     nilai_matkul_id: nilai_matkul2.id
                 }
             })
 
             await nilai_sub_matkul2_3.update({
                 nilai: nilai2_3,
-                updatedBy: ""
+                updatedBy: req.username
             })
 
             let avg_nilai_matkul2 = (nilai2_1 + nilai2_2 + nilai2_3) / 3;
@@ -996,7 +1000,7 @@ module.exports = {
             let updated_nilai_matkul2 = await nilai_matkul2.update({
                 average: avg_nilai_matkul2,
                 huruf_mutu: huruf_mutu_matkul2,
-                updatedBy: ""
+                updatedBy: req.username
             })
 
             // MATKUL 3
@@ -1025,14 +1029,13 @@ module.exports = {
             let nilai_sub_matkul3_1 = await nilai_sub_matkuls.findOne({
                 where: {
                     sub_matkul_id: sub_matkul3_1.id,
-                    mahasiswa_id: mahasiswa_id,
                     nilai_matkul_id: nilai_matkul3.id
                 }
             })
 
             await nilai_sub_matkul3_1.update({
                 nilai: nilai3_1,
-                updatedBy: ""
+                updatedBy: req.username
             })
 
             let sub_matkul3_2 = await sub_matkuls.findOne({
@@ -1044,7 +1047,6 @@ module.exports = {
             let nilai_sub_matkul3_2 = await nilai_sub_matkuls.findOne({
                 where: {
                     sub_matkul_id: sub_matkul3_2.id,
-                    mahasiswa_id: mahasiswa_id,
                     nilai_matkul_id: nilai_matkul3.id
                 }
             })
@@ -1064,7 +1066,7 @@ module.exports = {
 
             await nilai_sub_sub_matkul3_2_1.update({
                 nilai: nilai3_2_1,
-                updatedBy: ""
+                updatedBy: req.username
             })
 
             let sub_sub_matkul3_2_2 = await sub_sub_matkuls.findOne({
@@ -1082,7 +1084,7 @@ module.exports = {
 
             await nilai_sub_sub_matkul3_2_2.update({
                 nilai: nilai3_2_2,
-                updatedBy: ""
+                updatedBy: req.username
             })
 
             let sub_sub_matkul3_2_3 = await sub_sub_matkuls.findOne({
@@ -1100,7 +1102,7 @@ module.exports = {
 
             await nilai_sub_sub_matkul3_2_3.update({
                 nilai: nilai3_2_3,
-                updatedBy: ""
+                updatedBy: req.username
             })
 
             let sub_sub_matkul3_2_4 = await sub_sub_matkuls.findOne({
@@ -1118,13 +1120,13 @@ module.exports = {
 
             await nilai_sub_sub_matkul3_2_3.update({
                 nilai: nilai3_2_4,
-                updatedBy: ""
+                updatedBy: req.username
             })
 
             let avg_nilai_sub_matkul3_2 = (nilai3_2_1 + nilai3_2_2 + nilai3_2_3 + nilai3_2_4) / 4;
             let updated_nilai_sub_matkul3_2 = await nilai_sub_matkul3_2.update({
                 nilai: avg_nilai_sub_matkul3_2,
-                updatedBy: ""
+                updatedBy: req.username
             })
 
             let avg_nilai_matkul3 = (nilai3_1 + avg_nilai_sub_matkul3_2) / 2;
@@ -1133,7 +1135,7 @@ module.exports = {
             let updated_nilai_matkul3 = await nilai_matkul3.update({
                 average: avg_nilai_matkul3,
                 huruf_mutu: huruf_mutu_matkul3,
-                updatedBy: ""
+                updatedBy: req.username
             })
 
             // MATKUL 4
@@ -1161,7 +1163,6 @@ module.exports = {
             let nilai_sub_matkul4_1 = await nilai_sub_matkuls.findOne({
                 where: {
                     sub_matkul_id: sub_matkul4_1.id,
-                    mahasiswa_id: mahasiswa_id,
                     nilai_matkul_id: nilai_matkul4.id
                 }
             })
@@ -1181,7 +1182,7 @@ module.exports = {
 
             await nilai_sub_sub_matkul4_1_1.update({
                 nilai: nilai4_1_1,
-                updatedBy: ""
+                updatedBy: req.username
             })
 
             let sub_sub_matkul4_1_2 = await sub_sub_matkuls.findOne({
@@ -1199,7 +1200,7 @@ module.exports = {
 
             await nilai_sub_sub_matkul4_1_2.update({
                 nilai: nilai4_1_2,
-                updatedBy: ""
+                updatedBy: req.username
             })
 
             let sub_sub_matkul4_1_3 = await sub_sub_matkuls.findOne({
@@ -1217,7 +1218,7 @@ module.exports = {
 
             await nilai_sub_sub_matkul4_1_3.update({
                 nilai: nilai4_1_3,
-                updatedBy: ""
+                updatedBy: req.username
             })
 
             let sub_sub_matkul4_1_4 = await sub_sub_matkuls.findOne({
@@ -1235,13 +1236,13 @@ module.exports = {
 
             await nilai_sub_sub_matkul4_1_4.update({
                 nilai: nilai4_1_4,
-                updatedBy: ""
+                updatedBy: req.username
             })
 
             let avg_nilai_sub_matkul4_1 = (nilai4_1_1 + nilai4_1_2 + nilai4_1_3 + nilai4_1_4) / 4;
             let updated_nilai_sub_matkul4_1 = await nilai_sub_matkul4_1.update({
                 nilai: avg_nilai_sub_matkul4_1,
-                updatedBy: ""
+                updatedBy: req.username
             })
 
             let huruf_mutu_matkul4 = HurufMutu(avg_nilai_sub_matkul4_1);
@@ -1249,7 +1250,7 @@ module.exports = {
             let updated_nilai_matkul4 = await nilai_matkul4.update({
                 average: avg_nilai_sub_matkul4_1,
                 huruf_mutu: huruf_mutu_matkul4,
-                updatedBy: ""
+                updatedBy: req.username
             })
 
             // MATKUL 5
@@ -1277,14 +1278,13 @@ module.exports = {
             let nilai_sub_matkul5_1 = await nilai_sub_matkuls.findOne({
                 where: {
                     sub_matkul_id: sub_matkul5_1.id,
-                    mahasiswa_id: mahasiswa_id,
                     nilai_matkul_id: nilai_matkul5.id
                 }
             })
 
             await nilai_sub_matkul5_1.update({
                 nilai: nilai5_1,
-                updatedBy: ""
+                updatedBy: req.username
             })
 
             let sub_matkul5_2 = await sub_matkuls.findOne({
@@ -1296,14 +1296,13 @@ module.exports = {
             let nilai_sub_matkul5_2 = await nilai_sub_matkuls.findOne({
                 where: {
                     sub_matkul_id: sub_matkul5_2.id,
-                    mahasiswa_id: mahasiswa_id,
                     nilai_matkul_id: nilai_matkul5.id
                 }
             })
 
             await nilai_sub_matkul5_2.update({
                 nilai: nilai5_2,
-                updatedBy: ""
+                updatedBy: req.username
             })
 
             let sub_matkul5_3 = await sub_matkuls.findOne({
@@ -1315,14 +1314,13 @@ module.exports = {
             let nilai_sub_matkul5_3 = await nilai_sub_matkuls.findOne({
                 where: {
                     sub_matkul_id: sub_matkul5_3.id,
-                    mahasiswa_id: mahasiswa_id,
                     nilai_matkul_id: nilai_matkul5.id
                 }
             })
 
             await nilai_sub_matkul5_3.update({
                 nilai: nilai5_3,
-                updatedBy: ""
+                updatedBy: req.username
             })
 
             let avg_nilai_matkul5 = (nilai5_1 + nilai5_2 + nilai5_3) / 3;
@@ -1331,7 +1329,7 @@ module.exports = {
             let updated_nilai_matkul5 = await nilai_matkul5.update({
                 average: avg_nilai_matkul5,
                 huruf_mutu: huruf_mutu_matkul5,
-                updatedBy: ""
+                updatedBy: req.username
             })
 
             // MATKUL 6
@@ -1359,14 +1357,13 @@ module.exports = {
             let nilai_sub_matkul6_1 = await nilai_sub_matkuls.findOne({
                 where: {
                     sub_matkul_id: sub_matkul6_1.id,
-                    mahasiswa_id: mahasiswa_id,
                     nilai_matkul_id: nilai_matkul6.id
                 }
             })
 
             await nilai_sub_matkul6_1.update({
                 nilai: nilai6_1,
-                updatedBy: ""
+                updatedBy: req.username
             })
 
             let huruf_mutu_matkul6 = HurufMutu(nilai6_1);
@@ -1374,7 +1371,7 @@ module.exports = {
             let updated_nilai_matkul6 = await nilai_matkul6.update({
                 average: nilai6_1,
                 huruf_mutu: huruf_mutu_matkul6,
-                updatedBy: ""
+                updatedBy: req.username
             })
 
             return res.status(200).json({
@@ -1496,9 +1493,9 @@ module.exports = {
     //             mahasiswa_id: mahasiswa.id,
     //             matkul_id: matkul1.id,
     //             createdBy: "",
-    //             updatedBy: ""
+    //             updatedBy: req.username
     //         })
-            
+
 
 
     //         let nilai_sub_matkul1 = nilai_sub_matkuls.bulkCreate([{

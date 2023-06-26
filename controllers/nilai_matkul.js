@@ -184,8 +184,12 @@ module.exports = {
                             nilai_sub_matkul_id: nilai_sub_matkul[i].id
                         }
                     })
-
-                    await nilai_sub_sub_matkul.destroy()
+                    
+                    let j = 0;
+                    while(nilai_sub_sub_matkul[j]){
+                        await nilai_sub_sub_matkul[j].destroy()
+                        j++
+                    }
                 }
                 await nilai_sub_matkul[i].destroy();
                 i++

@@ -79,6 +79,14 @@ module.exports = {
                     mahasiswa_id: mahasiswa_id
                 }
             })
+
+            if(!pembimbing){
+                return res.status(400).json({
+                    status: false,
+                    message: 'Tidak terdaftar sebagai pembimbing!'
+                });
+            }
+
             let sub_matkul = await sub_matkuls.findOne({
                 where: {
                     id: sub_matkul_id
@@ -169,7 +177,7 @@ module.exports = {
 
             averageNilaiSubMatkul = totalNilaiSubMatkul / i
 
-            await nilai_matkul.update({
+            await nilai_matkul_exist.update({
                 average: averageNilaiSubMatkul,
                 huruf_mutu: HurufMutu(averageNilaiSubMatkul),
                 updatedBy: req.username

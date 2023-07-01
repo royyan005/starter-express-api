@@ -15,6 +15,12 @@ module.exports = {
       mahasiswa_id: {
         type: Sequelize.INTEGER
       },
+      user_full_name: {
+        type: Sequelize.STRING
+      },
+      mahasiswa_full_name: {
+        type: Sequelize.STRING
+      },
       jenis_role: {
         type: Sequelize.ENUM("pembimbing1","pembimbing2","penguji")
       },

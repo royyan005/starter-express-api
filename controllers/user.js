@@ -3,21 +3,55 @@ const {
 } = require('../models');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
+const {
+    Op
+} = require('sequelize');
 
 module.exports = {
     getAll: async (req, res, next) => {
         try {
-            let user = await users.findAll();
-            if (!user[0]) {
-                return res.status(400).json({
-                    status: false,
-                    message: 'data not found!'
-                })
+            let {
+                sort = "full_name", type = "ASC", search = "", page = "1", limit = "10"
+            } = req.query;
+            page = parseInt(page);
+            limit = parseInt(limit)
+            let start = 0 + (page - 1) * limit;
+            let end = page * limit;
+            let user = await users.findAndCountAll({
+                where: {
+                    [Op.or]: {
+                            full_name: {
+                                [Op.like]: `%${search}%`
+                            }
+                        }
+                },
+                order: [
+                    [sort, type]
+                ],
+                limit: limit,
+                offset: start
+            });
+            let count = user.count;
+            let pagination = {}
+            pagination.totalRows = count;
+            pagination.totalPages = Math.ceil(count / limit);
+            pagination.thisPageRows = user.rows.length;
+            pagination.thisPageData = user.rows
+            if (end < count) {
+                pagination.next = {
+                    page: page + 1
+                }
             }
+            if (start > 0) {
+                pagination.prev = {
+                    page: page - 1
+                }
+            }
+
             return res.status(200).json({
                 status: true,
                 message: 'get all data success!',
-                data: user
+                data: pagination
             });
         } catch (err) {
             next(err)
@@ -178,21 +212,21 @@ module.exports = {
     login: async (req, res) => {
         const refreshTokenCookie = req.cookies.refreshToken;
         if (refreshTokenCookie) {
-            const user = await users.findAll({
+            const user = await users.findOne({
                 where: {
                     token: refreshTokenCookie
                 }
             });
 
-            if (user == '') {
+            if (!user){
                 return res.status(400).json({
                     status: res.statusCode,
                     message: 'User tidak ditemukan'
                 });
             }
 
-            const idUser = user[0].id;
-            const username = user[0].username;
+            const idUser = user.id;
+            const username = user.username;
             const accessToken = jwt.sign({
                     idUser,
                     username,
@@ -233,28 +267,28 @@ module.exports = {
                 message: 'Username dan password harus diisi'
             });
         }
-        const user = await users.findAll({
+        const user = await users.findOne({
             where: {
                 username: req.body.username
             }
         });
 
-        if (user == '') {
+        if (!user) {
             return res.status(400).json({
                 status: res.statusCode,
                 message: 'User tidak ditemukan'
             });
         }
 
-        const match = await bcrypt.compare(req.body.password, user[0].password);
+        const match = await bcrypt.compare(req.body.password, user.password);
         if (!match) {
             return res.status(403).json({
                 message: "wrong password"
             });
         }
 
-        const idUser = user[0].id;
-        const username = user[0].username;
+        const idUser = user.id;
+        const username = user.username;
 
         const accessToken = jwt.sign({
                 idUser,
@@ -299,7 +333,7 @@ module.exports = {
             status: res.statusCode,
             message: "No Token Found"
         });
-        const user = await users.findAll({
+        const user = await users.findOne({
             where: {
                 token: refreshToken
             }
@@ -308,7 +342,7 @@ module.exports = {
             status: res.statusCode,
             message: "No User Found"
         });
-        const idUser = user[0].id
+        const idUser = user.id
         await users.update({
             token: null
         }, {

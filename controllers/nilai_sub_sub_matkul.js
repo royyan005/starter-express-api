@@ -10,21 +10,61 @@ const {
 const {
     HurufMutu
 } = require("../helpers/helper");
+const {
+    Op
+} = require('sequelize');
 
 module.exports = {
     getAll: async (req, res, next) => {
         try {
-            let nilai_sub_sub_matkul = await nilai_sub_sub_matkuls.findAll();
-            if (!nilai_sub_sub_matkul[0]) {
-                return res.status(400).json({
-                    status: false,
-                    message: 'data not found!'
-                })
+            let {
+                sort = "createdAt", type = "ASC", search = "", page = "1", limit = "10"
+            } = req.query;
+            page = parseInt(page);
+            limit = parseInt(limit)
+            let start = 0 + (page - 1) * limit;
+            let end = page * limit;
+            let nilai_sub_sub_matkul = await nilai_sub_sub_matkuls.findAndCountAll({
+                // where: {
+                //     [Op.or]: [{
+                //             deskripsi: {
+                //                 [Op.like]: `%${search}%`
+                //             }
+                //         },
+                //         {
+                //             kode_nilai_sub_sub_matkul: {
+                //                 [Op.like]: `%${search}%`
+                //             }
+                //         }
+                //     ]
+                // },
+                order: [
+                    [sort, type]
+                ],
+                limit: limit,
+                offset: start
+            });
+            let count = nilai_sub_sub_matkul.count;
+            let pagination = {}
+            pagination.totalRows = count;
+            pagination.totalPages = Math.ceil(count / limit);
+            pagination.thisPageRows = nilai_sub_sub_matkul.rows.length;
+            pagination.thisPageData = nilai_sub_sub_matkul.rows
+            if (end < count) {
+                pagination.next = {
+                    page: page + 1
+                }
             }
+            if (start > 0) {
+                pagination.prev = {
+                    page: page - 1
+                }
+            }
+
             return res.status(200).json({
                 status: true,
                 message: 'get all data success!',
-                data: nilai_sub_sub_matkul
+                data: pagination
             });
         } catch (err) {
             next(err)
@@ -161,7 +201,7 @@ module.exports = {
                             nilai_sub_matkul_id: nilai_sub_matkul.id
                         }
                     })
-    
+
                     let i = 0;
                     let total = 0;
                     while (get_all_nilai_sub_sub_matkul[i]) {
@@ -169,7 +209,7 @@ module.exports = {
                         i++
                     }
                     average = total / i
-    
+
                     await nilai_sub_matkul.update({
                         nilai: average
                     })
@@ -203,7 +243,7 @@ module.exports = {
                             nilai_sub_matkul_id: nilai_sub_matkul_exist.id
                         }
                     })
-    
+
                     let i = 0;
                     let total = 0;
                     while (get_all_nilai_sub_sub_matkul[i]) {
@@ -211,7 +251,7 @@ module.exports = {
                         i++
                     }
                     average = total / i
-    
+
                     await nilai_sub_matkul_exist.update({
                         nilai: average,
                         updatedBy: req.username

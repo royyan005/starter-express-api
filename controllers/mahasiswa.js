@@ -1,21 +1,61 @@
 const {
     mahasiswas
 } = require("../models")
+const {
+    Op
+} = require('sequelize');
 
 module.exports = {
     getAll: async (req, res, next) => {
         try {
-            let mahasiswa = await mahasiswas.findAll();
-            if (!mahasiswa[0]) {
-                return res.status(400).json({
-                    status: false,
-                    message: 'data not found!'
-                })
+            let {
+                sort = "full_name", type = "ASC", search = "", page = "1", limit = "10"
+            } = req.query;
+            page = parseInt(page);
+            limit = parseInt(limit)
+            let start = 0 + (page - 1) * limit;
+            let end = page * limit;
+            let mahasiswa = await mahasiswas.findAndCountAll({
+                where: {
+                    [Op.or]: [{
+                            full_name: {
+                                [Op.like]: `%${search}%`
+                            }
+                        },
+                        {
+                            npm: {
+                                [Op.like]: `%${search}%`
+                            }
+                        }
+                    ]
+                },
+                order: [
+                    [sort, type]
+                ],
+                limit: limit,
+                offset: start
+            });
+            let count = mahasiswa.count;
+            let pagination = {}
+            pagination.totalRows = count;
+            pagination.totalPages = Math.ceil(count / limit);
+            pagination.thisPageRows = mahasiswa.rows.length;
+            pagination.thisPageData = mahasiswa.rows
+            if (end < count) {
+                pagination.next = {
+                    page: page + 1
+                }
             }
+            if (start > 0) {
+                pagination.prev = {
+                    page: page - 1
+                }
+            }
+
             return res.status(200).json({
                 status: true,
                 message: 'get all data success!',
-                data: mahasiswa
+                data: pagination
             });
         } catch (err) {
             next(err)
@@ -52,14 +92,14 @@ module.exports = {
             npm,
             jurusan
         } = req.body;
-        
+
         try {
             let mahasiswaExist = await mahasiswas.findOne({
-                where:{
+                where: {
                     npm: npm
                 }
             })
-            if(mahasiswaExist){
+            if (mahasiswaExist) {
                 return res.status(400).json({
                     status: false,
                     message: 'mahasiswa already exist!'

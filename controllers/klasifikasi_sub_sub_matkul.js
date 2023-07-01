@@ -1,21 +1,61 @@
 const {
     klasifikasi_sub_sub_matkuls
 } = require("../models")
+const {
+    Op
+} = require('sequelize');
 
 module.exports = {
     getAll: async (req, res, next) => {
         try {
-            let klasifikasi_sub_sub_matkul = await klasifikasi_sub_sub_matkuls.findAll();
-            if (!klasifikasi_sub_sub_matkul[0]) {
-                return res.status(400).json({
-                    status: false,
-                    message: 'data not found!'
-                })
+            let {
+                sort = "deskripsi", type = "ASC", search = "", page = "1", limit = "10"
+            } = req.query;
+            page = parseInt(page);
+            limit = parseInt(limit)
+            let start = 0 + (page - 1) * limit;
+            let end = page * limit;
+            let klasifikasi_sub_sub_matkul = await klasifikasi_sub_sub_matkuls.findAndCountAll({
+                where: {
+                    [Op.or]: [{
+                            deskripsi: {
+                                [Op.like]: `%${search}%`
+                            }
+                        },
+                        {
+                            kode_klasifikasi: {
+                                [Op.like]: `%${search}%`
+                            }
+                        }
+                    ]
+                },
+                order: [
+                    [sort, type]
+                ],
+                limit: limit,
+                offset: start
+            });
+            let count = klasifikasi_sub_sub_matkul.count;
+            let pagination = {}
+            pagination.totalRows = count;
+            pagination.totalPages = Math.ceil(count / limit);
+            pagination.thisPageRows = klasifikasi_sub_sub_matkul.rows.length;
+            pagination.thisPageData = klasifikasi_sub_sub_matkul.rows
+            if (end < count) {
+                pagination.next = {
+                    page: page + 1
+                }
             }
+            if (start > 0) {
+                pagination.prev = {
+                    page: page - 1
+                }
+            }
+
             return res.status(200).json({
                 status: true,
                 message: 'get all data success!',
-                data: klasifikasi_sub_sub_matkul
+                data: pagination
             });
         } catch (err) {
             next(err)

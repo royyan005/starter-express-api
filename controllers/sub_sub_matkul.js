@@ -1,21 +1,61 @@
 const {
     sub_sub_matkuls
 } = require("../models")
+const {
+    Op
+} = require('sequelize');
 
 module.exports = {
     getAll: async (req, res, next) => {
         try {
-            let sub_sub_matkul = await sub_sub_matkuls.findAll();
-            if (!sub_sub_matkul[0]) {
-                return res.status(400).json({
-                    status: false,
-                    message: 'data not found!'
-                })
+            let {
+                sort = "deskripsi", type = "ASC", search = "", page = "1", limit = "10"
+            } = req.query;
+            page = parseInt(page);
+            limit = parseInt(limit)
+            let start = 0 + (page - 1) * limit;
+            let end = page * limit;
+            let sub_sub_matkul = await sub_sub_matkuls.findAndCountAll({
+                where: {
+                    [Op.or]: [{
+                            deskripsi: {
+                                [Op.like]: `%${search}%`
+                            }
+                        },
+                        {
+                            kode_sub_sub_matkul: {
+                                [Op.like]: `%${search}%`
+                            }
+                        }
+                    ]
+                },
+                order: [
+                    [sort, type]
+                ],
+                limit: limit,
+                offset: start
+            });
+            let count = sub_sub_matkul.count;
+            let pagination = {}
+            pagination.totalRows = count;
+            pagination.totalPages = Math.ceil(count / limit);
+            pagination.thisPageRows = sub_sub_matkul.rows.length;
+            pagination.thisPageData = sub_sub_matkul.rows
+            if (end < count) {
+                pagination.next = {
+                    page: page + 1
+                }
             }
+            if (start > 0) {
+                pagination.prev = {
+                    page: page - 1
+                }
+            }
+
             return res.status(200).json({
                 status: true,
                 message: 'get all data success!',
-                data: sub_sub_matkul
+                data: pagination
             });
         } catch (err) {
             next(err)

@@ -20,8 +20,8 @@ app.use((err, res) => {
   console.error(err.stack);
   return res.status(404).json({
       status: false,
-      message: err.message,
-      data: null
+      code:res.statusCode,
+      message: err.message
   });
 });
 
@@ -29,8 +29,8 @@ app.use((err, res) => {
   console.error(err.stack);
   return res.status(500).json({
       status: false,
-      message: err.message,
-      data: null
+      code:res.statusCode,
+      message: err.message
   });
 });
 

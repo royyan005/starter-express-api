@@ -1,5 +1,7 @@
 const {
-    mahasiswas
+    mahasiswas,
+    pembimbings,
+    users
 } = require("../models")
 const {
     Op
@@ -56,6 +58,58 @@ module.exports = {
                 status: true,
                 message: 'get all data success!',
                 data: pagination
+            });
+        } catch (err) {
+            next(err)
+        }
+    },
+    getMahasiswaAndPembimbing: async (req, res, next) => {
+        try {
+            let data = []
+            let mahasiswa = await mahasiswas.findAll()
+            if (!mahasiswa[0]) {
+                return res.status(400).json({
+                    status: false,
+                    message: 'data not found!',
+                })
+            }
+            let i = 0;
+            while (mahasiswa[i]) {
+                let pembimbing = await pembimbings.findAll({
+                    where: {
+                        mahasiswa_id: mahasiswa[i].id
+                    },
+                    attributes: {
+                        exclude: ["id", 'mahasiswa_id','mahasiswa_full_name', 'createdAt', 'updatedAt','createdBy', 'updatedBy']
+                    },
+                });
+                let j = 0;
+                let pembimbing1 = "-"
+                let pembimbing2 = "-"
+                let penguji = "-"
+                while (pembimbing[j]) {
+                    if (pembimbing[j].jenis_role == "pembimbing1") {
+                        pembimbing1 = pembimbing[j]
+                    } else if (pembimbing[j].jenis_role == "pembimbing2") {
+                        pembimbing2 = pembimbing[j]
+                    } else {
+                        penguji = pembimbing[j]
+                    }
+                    j++
+                }
+                data[i] = {
+                    mahasiswa_data: mahasiswa[i],
+                    pembimbng1: pembimbing1,
+                    pembimbing2: pembimbing2,
+                    penguji: penguji
+                }
+                i++
+            }
+
+            return res.status(200).json({
+                status: true,
+                message: 'get data success!',
+                data: data
             });
         } catch (err) {
             next(err)

@@ -65,19 +65,45 @@ module.exports = {
     },
     getMahasiswaAndPembimbing: async (req, res, next) => {
         try {
-            let data = []
-            let mahasiswa = await mahasiswas.findAll()
-            if (!mahasiswa[0]) {
+            let {
+                sort = "full_name", type = "ASC", search = "", page = "1", limit = "10"
+            } = req.query;
+            page = parseInt(page);
+            limit = parseInt(limit)
+            let start = 0 + (page - 1) * limit;
+            let end = page * limit;
+            let mahasiswa = await mahasiswas.findAndCountAll({
+                where: {
+                    [Op.or]: [{
+                            full_name: {
+                                [Op.like]: `%${search}%`
+                            }
+                        },
+                        {
+                            npm: {
+                                [Op.like]: `%${search}%`
+                            }
+                        }
+                    ]
+                },
+                order: [
+                    [sort, type]
+                ],
+                limit: limit,
+                offset: start
+            });
+            if (!mahasiswa) {
                 return res.status(400).json({
                     status: false,
                     message: 'data not found!',
                 })
             }
+            let data = []
             let i = 0;
-            while (mahasiswa[i]) {
+            while (mahasiswa.rows[i]) {
                 let pembimbing = await pembimbings.findAll({
                     where: {
-                        mahasiswa_id: mahasiswa[i].id
+                        mahasiswa_id: mahasiswa.rows[i].id
                     },
                     attributes: {
                         exclude: ["id", 'mahasiswa_id','mahasiswa_full_name', 'createdAt', 'updatedAt','createdBy', 'updatedBy']
@@ -98,18 +124,34 @@ module.exports = {
                     j++
                 }
                 data[i] = {
-                    mahasiswa_data: mahasiswa[i],
+                    mahasiswa_data: mahasiswa.rows[i],
                     pembimbng1: pembimbing1,
                     pembimbing2: pembimbing2,
                     penguji: penguji
                 }
                 i++
             }
+            let count = mahasiswa.count;
+            let pagination = {}
+            pagination.totalRows = count;
+            pagination.totalPages = Math.ceil(count / limit);
+            pagination.thisPageRows = mahasiswa.rows.length;
+            pagination.thisPageData = data
+            if (end < count) {
+                pagination.next = {
+                    page: page + 1
+                }
+            }
+            if (start > 0) {
+                pagination.prev = {
+                    page: page - 1
+                }
+            }
 
             return res.status(200).json({
                 status: true,
                 message: 'get data success!',
-                data: data
+                data: pagination
             });
         } catch (err) {
             next(err)

@@ -125,7 +125,7 @@ module.exports = {
                 }
                 data[i] = {
                     mahasiswa_data: mahasiswa.rows[i],
-                    pembimbng1: pembimbing1,
+                    pembimbing1: pembimbing1,
                     pembimbing2: pembimbing2,
                     penguji: penguji
                 }

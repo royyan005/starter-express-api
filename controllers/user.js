@@ -292,10 +292,11 @@ module.exports = {
 
         const idUser = user.id;
         const username = user.username;
-
+        const role = user.role
         const accessToken = jwt.sign({
                 idUser,
                 username,
+                role,
             },
             process.env.ACCESS_TOKEN_SECRET, {
                 expiresIn: '1d'
@@ -304,6 +305,7 @@ module.exports = {
         const refreshToken = jwt.sign({
                 idUser,
                 username,
+                role,
             },
             process.env.REFRESH_TOKEN_SECRET, {
                 expiresIn: '7d'

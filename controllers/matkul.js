@@ -16,19 +16,19 @@ module.exports = {
             let start = 0 + (page - 1) * limit;
             let end = page * limit;
             let matkul = await matkuls.findAndCountAll({
-                // where: {
-                //     [Op.or]: [{
-                //             deskripsi: {
-                //                 [Op.like]: `%${search}%`
-                //             }
-                //         },
-                //         {
-                //             kode_matkul: {
-                //                 [Op.like]: `%${search}%`
-                //             }
-                //         }
-                //     ]
-                // },
+                where: {
+                    [Op.or]: [{
+                            deskripsi: {
+                                [Op.like]: `%${search}%`
+                            }
+                        },
+                        {
+                            kode_matkul: {
+                                [Op.like]: `%${search}%`
+                            }
+                        }
+                    ]
+                },
                 order: [
                     [sort, type]
                 ],
@@ -56,6 +56,19 @@ module.exports = {
                 status: true,
                 message: 'get all data success!',
                 data: pagination
+            });
+        } catch (err) {
+            next(err)
+        }
+    },
+    getAllWoPagination: async (req, res, next) => { //get all data without pagination
+        try {
+            let matkul = await matkuls.findAll();
+
+            return res.status(200).json({
+                status: true,
+                message: 'get all data success!',
+                data: matkul
             });
         } catch (err) {
             next(err)

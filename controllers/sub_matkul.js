@@ -61,6 +61,23 @@ module.exports = {
             next(err)
         }
     },
+    getAllwSubSub: async (req, res, next) => { //get all sub matkul with sub sub matkul
+        try {
+            let sub_matkul = await sub_matkuls.findAll({
+                where: {
+                    is_sub_sub_matkul: true
+                }
+            });
+            
+            return res.status(200).json({
+                status: true,
+                message: 'get all data success!',
+                data: sub_matkul
+            });
+        } catch (err) {
+            next(err)
+        }
+    },
     getById: async (req, res, next) => {
         const {
             id

@@ -13,6 +13,7 @@ const nilai_sub_matkul = require('./nilai_sub_matkul');
 const nilai_sub_sub_matkul = require('./nilai_sub_sub_matkul');
 const klasifikasi_sub_matkul = require('./klasifikasi_sub_matkul');
 const klasifikasi_sub_sub_matkul = require('./klasifikasi_sub_sub_matkul');
+const berita_acara = require('./berita_acara');
 
 router.use('/sub-matkul', sub_matkul);
 router.use('/sub-sub-matkul', sub_sub_matkul);
@@ -26,6 +27,7 @@ router.use('/nilai-matkul', nilai_matkul);
 router.use('/nilai-sub-matkul', nilai_sub_matkul);
 router.use('/nilai-sub-sub-matkul', nilai_sub_sub_matkul);
 router.use('/klasifikasi-sub-matkul', klasifikasi_sub_matkul);
+router.use('/berita-acara', berita_acara);
 router.use('/klasifikasi-sub-sub-matkul', klasifikasi_sub_sub_matkul);
 
 module.exports = router;

@@ -1,5 +1,9 @@
 const {
-    matkuls
+    matkuls,
+    sub_matkuls,
+    sub_sub_matkuls,
+    klasifikasi_sub_matkuls,
+    klasifikasi_sub_sub_matkuls
 } = require("../models")
 const {
     Op
@@ -64,6 +68,35 @@ module.exports = {
     getAllWoPagination: async (req, res, next) => { //get all data without pagination
         try {
             let matkul = await matkuls.findAll();
+
+            return res.status(200).json({
+                status: true,
+                message: 'get all data success!',
+                data: matkul
+            });
+        } catch (err) {
+            next(err)
+        }
+    },
+    getWholeThings: async (req, res, next) => { //get all data with sub matkul, sub sub matkul, klasifikasi sub, klasifikasi sub sub
+        try {
+            let matkul = await matkuls.findAll({
+                include: [{
+                    model: sub_matkuls,
+                    as: 'sub_matkuls',
+                    include: [{
+                        model: klasifikasi_sub_matkuls,
+                        as: 'klasifikasi_sub_matkuls'
+                    }, {
+                        model: sub_sub_matkuls,
+                        as: 'sub_sub_matkuls',
+                        include: [{
+                            model: klasifikasi_sub_sub_matkuls,
+                            as: 'klasifikasi_sub_sub_matkuls'
+                        }]
+                    }]
+                }]
+            });
 
             return res.status(200).json({
                 status: true,

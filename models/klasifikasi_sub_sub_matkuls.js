@@ -11,6 +11,10 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       // define association here
+      klasifikasi_sub_sub_matkuls.belongsTo(models.sub_sub_matkuls, {
+        foreignKey: 'sub_sub_matkul_id',
+        as: 'sub_sub_matkuls'
+      });
     }
   }
   klasifikasi_sub_sub_matkuls.init({

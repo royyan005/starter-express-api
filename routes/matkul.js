@@ -8,8 +8,8 @@ router.get('/', controllers.matkul.getAll);
 router.get('/wopagination', controllers.matkul.getAllWoPagination);
 router.get('/all-things', controllers.matkul.getWholeThings);
 router.get('/:id', controllers.matkul.getById);
-router.post('/', middleware.verifyTokenAdmin, controllers.matkul.create);
-router.put('/:id', middleware.verifyTokenAdmin, controllers.matkul.update);
-router.delete('/:id', middleware.verifyTokenAdmin, controllers.matkul.delete);
+router.post('/', middleware.verifyTokenAdminOrSuperAdmin, controllers.matkul.create);
+router.put('/:id', middleware.verifyTokenAdminOrSuperAdmin, controllers.matkul.update);
+router.delete('/:id', middleware.verifyTokenAdminOrSuperAdmin, controllers.matkul.delete);
 
 module.exports = router;

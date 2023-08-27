@@ -11,6 +11,7 @@ const pembimbing = require('./pembimbing')
 const sub_matkul = require('./sub_matkul')
 const sub_sub_matkul = require('./sub_sub_matkul')
 const total_nilai_matkul = require('./total_nilai_matkul')
+const berita_acara = require('./berita_acara')
 
 
 module.exports = {
@@ -26,5 +27,6 @@ module.exports = {
     pembimbing,
     sub_matkul,
     sub_sub_matkul,
-    total_nilai_matkul
+    total_nilai_matkul,
+    berita_acara
 };

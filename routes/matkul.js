@@ -6,6 +6,7 @@ const middleware = require('../middleware/verifyToken')
 /* GET users listing. */
 router.get('/', controllers.matkul.getAll);
 router.get('/wopagination', controllers.matkul.getAllWoPagination);
+router.get('/all-things', controllers.matkul.getWholeThings);
 router.get('/:id', controllers.matkul.getById);
 router.post('/', middleware.verifyTokenAdmin, controllers.matkul.create);
 router.put('/:id', middleware.verifyTokenAdmin, controllers.matkul.update);

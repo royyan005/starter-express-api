@@ -11,6 +11,22 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       // define association here
+      nilai_matkuls.belongsTo(models.mahasiswas, {
+        foreignKey: 'mahasiswa_id',
+        as: 'mahasiswas'
+      });
+      nilai_matkuls.belongsTo(models.pembimbings, {
+        foreignKey: 'pembimbing_id',
+        as: 'pembimbings'
+      });
+      nilai_matkuls.hasMany(models.nilai_sub_matkuls, {
+        foreignKey: 'nilai_matkul_id',
+        as: 'nilai_sub_matkuls'
+      });
+      nilai_matkuls.belongsTo(models.matkuls, {
+        foreignKey: 'matkul_id',
+        as: 'matkuls'
+      });
     }
   }
   nilai_matkuls.init({

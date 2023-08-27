@@ -1,5 +1,6 @@
 const {
-    sub_sub_matkuls
+    sub_sub_matkuls,
+    klasifikasi_sub_sub_matkuls
 } = require("../models")
 const {
     Op
@@ -90,7 +91,8 @@ module.exports = {
         const {
             sub_matkul_id,
             deskripsi,
-            kode_sub_sub_matkul
+            kode_sub_sub_matkul,
+            klasifikasi
         } = req.body;
         try {
             let sub_sub_matkul = await sub_sub_matkuls.create({
@@ -100,6 +102,20 @@ module.exports = {
                 createdBy: req.username,
                 updatedBy: req.username
             });
+            
+            let createdKlasifikasi = [];
+            for (const klasifikasiEntry of klasifikasi) {
+                let newKlasifikasi = await klasifikasi_sub_sub_matkuls.create({
+                    nilai_min: klasifikasiEntry.nilai_min,
+                    nilai_max: klasifikasiEntry.nilai_max,
+                    deskripsi: klasifikasiEntry.deskripsi,
+                    sub_sub_matkul_id: sub_sub_matkul.id,
+                });
+                createdKlasifikasi.push(newKlasifikasi);
+            }
+
+            sub_sub_matkul.klasifikasi = createdKlasifikasi;
+
             return res.status(200).json({
                 status: true,
                 message: 'create data success!',

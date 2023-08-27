@@ -11,6 +11,14 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       // define association here
+      matkuls.hasMany(models.sub_matkuls, {
+        foreignKey: 'matkul_id',
+        as: 'sub_matkuls'
+      });
+      matkuls.hasMany(models.nilai_matkuls, {
+        foreignKey: 'matkul_id',
+        as: 'nilai_matkuls'
+      })
     }
   }
   matkuls.init({

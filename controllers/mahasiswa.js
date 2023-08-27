@@ -1,11 +1,26 @@
 const {
     mahasiswas,
     pembimbings,
-    users
+    users,
+    matkuls,
+    nilai_matkuls
 } = require("../models")
 const {
+    DB_USERNAME,
+    DB_PASSWORD,
+    DB_HOST,
+    DB_NAME
+} = process.env;
+const {
+    Sequelize,
     Op
 } = require('sequelize');
+
+const sequelize = new Sequelize(DB_NAME, DB_USERNAME, DB_PASSWORD, {
+    host: DB_HOST,
+    dialect: 'mysql',
+    // ... other options
+});
 
 module.exports = {
     getAll: async (req, res, next) => {
@@ -106,7 +121,7 @@ module.exports = {
                         mahasiswa_id: mahasiswa.rows[i].id
                     },
                     attributes: {
-                        exclude: ["id", 'mahasiswa_id','mahasiswa_full_name', 'createdAt', 'updatedAt','createdBy', 'updatedBy']
+                        exclude: ["id", 'mahasiswa_id', 'mahasiswa_full_name', 'createdAt', 'updatedAt', 'createdBy', 'updatedBy']
                     },
                 });
                 let j = 0;
@@ -157,6 +172,89 @@ module.exports = {
             next(err)
         }
     },
+    getAllWithFullNilai: async (req, res, next) => { //get all mahasiswa where nilai completed //not done yet
+        try {
+            let matkul_count = await matkuls.count()
+            const mahasiswa = await mahasiswas.findAll({
+                include: [{
+                    model: nilai_matkuls,
+                    as: 'nilai_matkuls',
+                    attributes: ['pembimbing_id', 'matkul_id'], // Include necessary attributes
+                }, ],
+            });
+
+            if(mahasiswa.length == 0){
+                return res.status(400).json({
+                    status: false,
+                    message: 'data not found!',
+                })
+            }
+
+            let data = []
+            let i = 0
+            while (mahasiswa[i]) {
+                if (mahasiswa[i].nilai_matkuls.length == matkul_count * 3) {
+                    data.push({
+                        id: mahasiswa[i].id,
+                        full_name: mahasiswa[i].full_name,
+                        npm: mahasiswa[i].npm,
+                        jurusan: mahasiswa[i].jurusan
+                    })
+                }
+                i++
+            }
+            // for (let each_mahasiswa in mahasiswa) {
+            //     console.log(each_mahasiswa[each_mahasiswa]);
+            // let pembimbing = await pembimbings.findAll({
+            //     where: {
+            //         mahasiswa_id: each_mahasiswa.id
+            //     }
+            // });
+            // let nilai_matkul = []
+            // for (let each_pembimbing in pembimbing) {
+            //     nilai_matkul = await nilai_matkuls.findAll({
+            //         where: {
+            //             mahasiswa_id: each_mahasiswa.id,
+            //             pembimbing_id: each_pembimbing.id
+            //         }
+            //     })
+            // }
+            // if (nilai_matkul.length == pembimbing.length * matkul_count) {
+            //     data.push({mahasiswa:each_mahasiswa})
+            // }
+            // }
+
+            // for (let each_mahasiswa in mahasiswa) {
+            //     let pembimbing = await pembimbings.findAll({
+            //         where: {
+            //             mahasiswa_id: each_mahasiswa.id
+            //     }})
+            //     for (let each_pembimbing in pembimbing) {
+            //         let nilai = await nilai_matkuls.findAll({
+            //             where: {
+            //                 mahasiswa_id: each_mahasiswa.id,
+            //                 pembimbing_id: each_pembimbing.id
+            //             }
+            //         })
+            //     }
+            //     mahasiswa.nilai = nilai
+            // }
+            if(data.length == 0){
+                return res.status(400).json({
+                    status: false,
+                    message: 'data not found!',
+                })
+            }
+
+            return res.status(200).json({
+                status: true,
+                message: 'get data success!',
+                data: data
+            });
+        } catch (err) {
+            next(err)
+        }
+    },
     getById: async (req, res, next) => {
         const {
             id
@@ -165,7 +263,12 @@ module.exports = {
             let mahasiswa = await mahasiswas.findOne({
                 where: {
                     id: id
-                }
+                },
+                include: [{
+                    model: pembimbings,
+                    as: 'pembimbings',
+                    attributes: ['id', 'jenis_role', 'user_id', 'user_full_name'], // Include the necessary attributes for checking
+                }]
             });
             if (!mahasiswa) {
                 return res.status(400).json({

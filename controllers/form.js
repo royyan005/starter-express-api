@@ -72,8 +72,11 @@ module.exports = {
                 nama_mahasiswa: mahasiswa.full_name,
                 nilai
             };
-            let message = [];
-            let index = 0
+            let message = {
+                matkul:[],
+                sub:[],
+                sub_sub:[]
+            }
             let eligible = true
             while (matkul[i]) {
                 nilai_matkul = await nilai_matkuls.findOne({
@@ -84,11 +87,13 @@ module.exports = {
                     }
                 })
                 if (!nilai_matkul) {
-                    message[index] = {
-                        msg: "nilai-nilai pada matkul " + matkul[i].kode_matkul + " belum diinputkan!"
+                    message.matkul[i] = {
+                        msg: `nilai-nilai pada sub/sub-sub matkul pada matkul "${matkul[i].deskripsi}" belum diinputkan!`
                     }
-                    index++
                     eligible = false
+                    nilai[i] = {
+                        message: message.matkul[i].msg
+                    };
                     i++
                     continue
                 }
@@ -112,11 +117,13 @@ module.exports = {
                         }
                     })
                     if (!nilai_sub_matkul) {
-                        message[index] = {
-                            msg: "nilai pada sub matkul " + sub_matkul[j].kode_sub_matkul + " belum diinputkan!"
+                        message.sub[j] = {
+                            msg: `nilai pada sub matkul/sub-sub matkul pada sub matkul "${sub_matkul[j].deskripsi}" belum diinputkan!`
                         }
-                        index++
                         eligible = false
+                        nilai[i].sub[j] = {
+                            message: message.sub[j].msg
+                        }
                         j++
                         continue
                     }
@@ -146,11 +153,13 @@ module.exports = {
                                 }
                             })
                             if (!nilai_sub_sub_matkul) {
-                                message[index] = {
-                                    msg: "nilai pada sub sub matkul " + sub_sub_matkul[k].kode_sub_sub_matkul + " belum diinputkan!"
+                                message.sub[k] = {
+                                    msg: `nilai pada sub sub matkul "${sub_sub_matkul[k].deskripsi}" belum diinputkan!`
                                 }
-                                index++
                                 eligible = false
+                                nilai[i].sub[j].sub[k] = {
+                                    message: message.sub[k].msg
+                                }
                                 k++
                                 continue
                             }
@@ -166,10 +175,10 @@ module.exports = {
                 }
                 i++;
             }
-            if(!eligible){
+            if (!eligible) {
                 return res.status(400).json({
                     status: false,
-                    message: message
+                    data: data
                 })
             }
             return res.status(200).json({

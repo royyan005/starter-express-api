@@ -83,7 +83,7 @@ module.exports = {
     //                 mahasiswa_id: mahasiswa_id
     //             })
 
-                
+
     //             total_sks += matkul[i].sks
     //             total_nilai_mutu += nilai_mutu
     //             if(angka_mutu>=3){
@@ -136,7 +136,7 @@ module.exports = {
                 }
             })
 
-            if(!mahasiswa){
+            if (!mahasiswa) {
                 return res.status(400).json({
                     status: false,
                     message: 'mahasiswa not found!'
@@ -166,15 +166,15 @@ module.exports = {
                 let nilai_semua_dosen = 0;
                 while (nilai_matkul[j]) {
                     let pembimbing = await pembimbings.findOne({
-                        where:{
+                        where: {
                             id: nilai_matkul[j].pembimbing_id
                         }
                     })
 
-                    if(pembimbing.jenis_role=="pembimbing1"){
-                        nilai_semua_dosen += (0.4*nilai_matkul[j].average);
+                    if (pembimbing.jenis_role == "pembimbing1") {
+                        nilai_semua_dosen += (0.4 * nilai_matkul[j].average);
                     } else {
-                        nilai_semua_dosen += (0.3*nilai_matkul[j].average)
+                        nilai_semua_dosen += (0.3 * nilai_matkul[j].average)
                     }
                     j++;
                 }
@@ -184,7 +184,7 @@ module.exports = {
 
                 total_sks += matkul[i].sks
                 total_nilai_mutu += nilai_mutu
-                if(angka_mutu>=3){
+                if (angka_mutu >= 3) {
                     keterangan = "Lulus"
                 } else {
                     keterangan = "Tidak Lulus"
@@ -212,6 +212,128 @@ module.exports = {
                 status: true,
                 message: 'get data success!',
                 data: output
+            });
+        } catch (err) {
+            next(err)
+        }
+    },
+    getTotalAllMahasiswa: async (req, res, next) => { //get all mahasiswa with nilai
+        try {
+            let mahasiswa = await mahasiswas.findAll()
+
+            if (!mahasiswa[0]) {
+                return res.status(400).json({
+                    status: false,
+                    message: 'mahasiswa not found!'
+                });
+            }
+
+            let matkul = await matkuls.findAll();
+            let data = [];
+            let m = 0;
+            while (mahasiswa[m]) {
+                let output = [];
+                let eligible = true
+                let pembimbing = await pembimbings.findAll({
+                    where: {
+                        mahasiswa_id: mahasiswa[m].id
+                    }
+                })
+                if (pembimbing.length != 3) {
+                    m++
+                    continue
+                }
+                let i = 0;
+                let total_sks = 0;
+                let total_nilai_mutu = 0;
+                let keterangan;
+                let huruf_mutu, angka_mutu, nilai_mutu
+                let nilai = []
+                while (matkul[i]) {
+                    if (!eligible) {
+                        break
+                    }
+                    let nilai_matkul = await nilai_matkuls.findAll({
+                        where: {
+                            matkul_id: matkul[i].id,
+                            mahasiswa_id: mahasiswa[m].id
+                        }
+                    })
+                    if (nilai_matkul.length != 3) {
+                        eligible = false
+                        break
+                    }
+                    let j = 0;
+                    let nilai_semua_dosen = 0;
+                    while (nilai_matkul[j]) {
+                        let pembimbing = await pembimbings.findOne({
+                            where: {
+                                id: nilai_matkul[j].pembimbing_id
+                            }
+                        })
+
+                        if (pembimbing.jenis_role == "pembimbing1") {
+                            nilai_semua_dosen += (0.4 * nilai_matkul[j].average);
+                        } else {
+                            nilai_semua_dosen += (0.3 * nilai_matkul[j].average)
+                        }
+                        j++;
+                    }
+                    huruf_mutu = HurufMutu(nilai_semua_dosen)
+                    angka_mutu = AngkaMutu(huruf_mutu)
+                    nilai_mutu = angka_mutu * matkul[i].sks
+
+                    total_sks += matkul[i].sks
+                    total_nilai_mutu += nilai_mutu
+                    if (angka_mutu >= 3) {
+                        keterangan = "Lulus"
+                    } else {
+                        keterangan = "Tidak Lulus"
+                    }
+                    nilai[i] = {
+                        nama_matkul: matkul[i].deskripsi,
+                        sks: matkul[i].sks,
+                        average: nilai_semua_dosen,
+                        huruf_mutu: huruf_mutu,
+                        angka_mutu: angka_mutu,
+                        nilai_mutu: nilai_mutu,
+                        keterangan: keterangan
+                    }
+                    i++
+                }
+                if (!eligible) {
+                    m++
+                    continue
+                }
+                let ipk = total_nilai_mutu / total_sks;
+                let huruf_mutu_akhir = AngkaMutuAverage(ipk)
+
+                output[m] = {
+                    id_mahasiswa: mahasiswa[m].id,
+                    nama_mahasiswa: mahasiswa[m].full_name,
+                    npm: mahasiswa[m].npm,
+                    total_sks : total_sks,
+                    ipk : ipk,
+                    huruf_mutu_akhir : huruf_mutu_akhir,
+                    nilai: nilai
+                }
+                if (eligible){
+                    data.push(output[m])
+                }
+                m++
+            }
+
+            if(data.length==0){
+                return res.status(400).json({
+                    status: false,
+                    message: 'data not found!'
+                });
+            }
+
+            return res.status(200).json({
+                status: true,
+                message: 'get data success!',
+                data: data
             });
         } catch (err) {
             next(err)

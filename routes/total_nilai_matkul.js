@@ -7,6 +7,7 @@ const middleware = require('../middleware/verifyToken')
 // router.get('/', controllers.mahasiswa.getAll);
 // router.get('/:id', controllers.mahasiswa.getById);
 router.get('/:mahasiswa_id', controllers.total_nilai_matkul.getTotal);
+router.get('/', controllers.total_nilai_matkul.getTotalAllMahasiswa);
 // router.get('/:user_id/view/:mahasiswa_id', controllers.form.getAllNilaiByMahasiswa);
 // router.delete('/:id', controllers.mahasiswa.delete);
 

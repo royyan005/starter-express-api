@@ -2,7 +2,8 @@ const {
     nilai_matkuls,
     nilai_sub_matkuls,
     sub_matkuls,
-    nilai_sub_sub_matkuls
+    nilai_sub_sub_matkuls,
+    pembimbings
 } = require("../models");
 const {
     Op
@@ -189,7 +190,7 @@ module.exports = {
     // },
     delete: async (req, res, next) => {
         const {
-            id
+            id,
         } = req.params
         try {
             let nilai_matkul = await nilai_matkuls.findOne({
@@ -236,6 +237,69 @@ module.exports = {
             }
 
             await nilai_matkul.destroy();
+            return res.status(200).json({
+                status: true,
+                message: 'delete data success!',
+            });
+        } catch (err) {
+            next(err)
+        }
+    },
+    deleteAllbyPembimbing: async (req, res, next) => {
+        const {
+            mahasiswa_id,
+        } = req.params
+        
+        try {
+            let pembimbing = await pembimbings.findOne({
+                where:{
+                    user_id: req.idUser,
+                    mahasiswa_id: mahasiswa_id
+                }
+            })
+            if(!pembimbing){
+                return res.status(400).json({
+                    status: false,
+                    message: 'pembimbing not found!',
+                });
+            }
+            let nilai_matkul = await nilai_matkuls.findAll({
+                where: {
+                    mahasiswa_id: mahasiswa_id,
+                    pembimbing_id: pembimbing.id
+                },
+                include: [{
+                    model: nilai_sub_matkuls,
+                    as: 'nilai_sub_matkuls',
+                    include: [{
+                        model: nilai_sub_sub_matkuls,
+                        as: 'nilai_sub_sub_matkuls'
+                    }]
+                }]
+            });
+
+            await nilai_sub_sub_matkuls.destroy({
+                where: {
+                    nilai_sub_matkul_id: {
+                        [Op.in]: nilai_matkul.map(n => n.nilai_sub_matkuls.map(s => s.id)).flat()
+                    }
+                }
+            });
+
+            await nilai_sub_matkuls.destroy({
+                where: {
+                    id: {
+                        [Op.in]: nilai_matkul.map(n => n.nilai_sub_matkuls.map(s => s.id)).flat()
+                    }
+                }
+            });
+
+            await nilai_matkuls.destroy({
+                where: {
+                    mahasiswa_id: mahasiswa_id,
+                    pembimbing_id: pembimbing.id
+                }
+            });
             return res.status(200).json({
                 status: true,
                 message: 'delete data success!',

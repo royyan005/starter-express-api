@@ -19,6 +19,10 @@ module.exports = (sequelize, DataTypes) => {
         foreignKey: 'nilai_matkul_id',
         as: 'nilai_matkuls'
       });
+      nilai_sub_matkuls.hasMany(models.nilai_sub_sub_matkuls, {
+        foreignKey: 'nilai_sub_matkul_id',
+        as: 'nilai_sub_sub_matkuls'
+      });
     }
   }
   nilai_sub_matkuls.init({

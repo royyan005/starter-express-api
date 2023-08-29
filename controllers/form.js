@@ -65,12 +65,11 @@ module.exports = {
             let sub_matkul;
             let sub_sub_matkul;
             let i = 0;
-            let nilai = [];
             let data = {
                 nama_pembimbing: user.full_name,
                 role: pembimbing.jenis_role,
                 nama_mahasiswa: mahasiswa.full_name,
-                nilai
+                nilai: []
             };
             let message = {
                 matkul:[],
@@ -91,13 +90,14 @@ module.exports = {
                         msg: `nilai-nilai pada sub/sub-sub matkul pada matkul "${matkul[i].deskripsi}" belum diinputkan!`
                     }
                     eligible = false
-                    nilai[i] = {
+                    data.nilai[i] = {
                         message: message.matkul[i].msg
                     };
                     i++
                     continue
                 }
-                nilai[i] = {
+                // console.log(eligible);
+                data.nilai[i] = {
                     kode: matkul[i].kode_matkul,
                     nama_matkul: matkul[i].deskripsi,
                     nilai_matkul: nilai_matkul.average,
@@ -108,8 +108,10 @@ module.exports = {
                         matkul_id: matkul[i].id
                     }
                 });
+                console.log(matkul[i].id);
                 let j = 0;
                 while (sub_matkul[j]) {
+                    console.log(eligible);
                     nilai_sub_matkul = await nilai_sub_matkuls.findOne({
                         where: {
                             sub_matkul_id: sub_matkul[j].id,
@@ -121,23 +123,24 @@ module.exports = {
                             msg: `nilai pada sub matkul/sub-sub matkul pada sub matkul "${sub_matkul[j].deskripsi}" belum diinputkan!`
                         }
                         eligible = false
-                        nilai[i].sub[j] = {
+                        data.nilai[i].sub[j] = {
                             message: message.sub[j].msg
                         }
                         j++
                         continue
                     }
-                    nilai[i].sub[j] = {
+                    
+                    data.nilai[i].sub[j] = {
                         kode: sub_matkul[j].kode_sub_matkul,
                         nama_sub_matkul: sub_matkul[j].deskripsi,
-                        nilai_sub_matkul: nilai_sub_matkul.nilai
+                        nilai_sub_matkul: nilai_sub_matkul.nilai,
                     }
                     if (sub_matkul[j].is_sub_sub_matkul == true) {
-                        nilai[i].sub[j] = {
+                        data.nilai[i].sub[j] = {
                             kode: sub_matkul[j].kode_sub_matkul,
                             nama_sub_matkul: sub_matkul[j].deskripsi,
                             nilai_sub_matkul: nilai_sub_matkul.nilai,
-                            sub: []
+                            sub_sub: []
                         }
                         sub_sub_matkul = await sub_sub_matkuls.findAll({
                             where: {
@@ -157,13 +160,13 @@ module.exports = {
                                     msg: `nilai pada sub sub matkul "${sub_sub_matkul[k].deskripsi}" belum diinputkan!`
                                 }
                                 eligible = false
-                                nilai[i].sub[j].sub[k] = {
+                                data.nilai[i].sub[j].sub[k] = {
                                     message: message.sub[k].msg
                                 }
                                 k++
                                 continue
                             }
-                            nilai[i].sub[j].sub[k] = {
+                            data.nilai[i].sub[j].sub_sub[k] = {
                                 kode: sub_sub_matkul[k].kode_sub_sub_matkul,
                                 nama_sub_sub_matkul: sub_sub_matkul[k].deskripsi,
                                 nilai_sub_sub_matkul: nilai_sub_sub_matkul.nilai
@@ -220,6 +223,12 @@ module.exports = {
             nilai6_1
         } = req.body;
         try {
+            if(!nilai1_1 || !nilai1_2 || !nilai1_3 || !nilai1_4 || !nilai2_1 || !nilai2_2 || !nilai2_3 || !nilai3_1 || !nilai3_2_1 || !nilai3_2_2 || !nilai3_2_3 || !nilai3_2_4 || !nilai4_1_1 || !nilai4_1_2 || !nilai4_1_3 || !nilai4_1_4 || !nilai5_1 || !nilai5_2 || !nilai5_3 || !nilai6_1){
+                return res.status(400).json({
+                    status: false,
+                    message: 'nilai tidak boleh kosong!'
+                })
+            }
             let mahasiswa = await mahasiswas.findOne({
                 where: {
                     id: mahasiswa_id
@@ -278,7 +287,7 @@ module.exports = {
 
             let matkul1 = await matkuls.findOne({
                 where: {
-                    kode_matkul: "matkul1"
+                    kode_matkul: "nilai1"
                 }
             });
 
@@ -294,7 +303,7 @@ module.exports = {
 
             let sub_matkul1_1 = await sub_matkuls.findOne({
                 where: {
-                    kode_sub_matkul: "submatkul1_1"
+                    kode_sub_matkul: "nilai1_1"
                 }
             })
 
@@ -309,7 +318,7 @@ module.exports = {
 
             let sub_matkul1_2 = await sub_matkuls.findOne({
                 where: {
-                    kode_sub_matkul: "submatkul1_2"
+                    kode_sub_matkul: "nilai1_2"
                 }
             })
 
@@ -324,7 +333,7 @@ module.exports = {
 
             let sub_matkul1_3 = await sub_matkuls.findOne({
                 where: {
-                    kode_sub_matkul: "submatkul1_3"
+                    kode_sub_matkul: "nilai1_3"
                 }
             })
 
@@ -339,7 +348,7 @@ module.exports = {
 
             let sub_matkul1_4 = await sub_matkuls.findOne({
                 where: {
-                    kode_sub_matkul: "submatkul1_4"
+                    kode_sub_matkul: "nilai1_4"
                 }
             })
 
@@ -365,7 +374,7 @@ module.exports = {
 
             let matkul2 = await matkuls.findOne({
                 where: {
-                    kode_matkul: "matkul2"
+                    kode_matkul: "nilai2"
                 }
             });
 
@@ -381,7 +390,7 @@ module.exports = {
 
             let sub_matkul2_1 = await sub_matkuls.findOne({
                 where: {
-                    kode_sub_matkul: "submatkul2_1"
+                    kode_sub_matkul: "nilai2_1"
                 }
             })
 
@@ -396,7 +405,7 @@ module.exports = {
 
             let sub_matkul2_2 = await sub_matkuls.findOne({
                 where: {
-                    kode_sub_matkul: "submatkul2_2"
+                    kode_sub_matkul: "nilai2_2"
                 }
             })
 
@@ -411,7 +420,7 @@ module.exports = {
 
             let sub_matkul2_3 = await sub_matkuls.findOne({
                 where: {
-                    kode_sub_matkul: "submatkul2_3"
+                    kode_sub_matkul: "nilai2_3"
                 }
             })
 
@@ -437,7 +446,7 @@ module.exports = {
 
             let matkul3 = await matkuls.findOne({
                 where: {
-                    kode_matkul: "matkul3"
+                    kode_matkul: "nilai3"
                 }
             });
 
@@ -453,7 +462,7 @@ module.exports = {
 
             let sub_matkul3_1 = await sub_matkuls.findOne({
                 where: {
-                    kode_sub_matkul: "submatkul3_1"
+                    kode_sub_matkul: "nilai3_1"
                 }
             })
 
@@ -468,7 +477,7 @@ module.exports = {
 
             let sub_matkul3_2 = await sub_matkuls.findOne({
                 where: {
-                    kode_sub_matkul: "submatkul3_2"
+                    kode_sub_matkul: "nilai3_2"
                 }
             })
 
@@ -483,7 +492,7 @@ module.exports = {
 
             let sub_sub_matkul3_2_1 = await sub_sub_matkuls.findOne({
                 where: {
-                    kode_sub_sub_matkul: "subsubmatkul3_2_1"
+                    kode_sub_sub_matkul: "nilai3_2_1"
                 }
             })
 
@@ -498,7 +507,7 @@ module.exports = {
 
             let sub_sub_matkul3_2_2 = await sub_sub_matkuls.findOne({
                 where: {
-                    kode_sub_sub_matkul: "subsubmatkul3_2_2"
+                    kode_sub_sub_matkul: "nilai3_2_2"
                 }
             })
 
@@ -513,7 +522,7 @@ module.exports = {
 
             let sub_sub_matkul3_2_3 = await sub_sub_matkuls.findOne({
                 where: {
-                    kode_sub_sub_matkul: "subsubmatkul3_2_3"
+                    kode_sub_sub_matkul: "nilai3_2_3"
                 }
             })
 
@@ -528,7 +537,7 @@ module.exports = {
 
             let sub_sub_matkul3_2_4 = await sub_sub_matkuls.findOne({
                 where: {
-                    kode_sub_sub_matkul: "subsubmatkul3_2_4"
+                    kode_sub_sub_matkul: "nilai3_2_4"
                 }
             })
 
@@ -560,7 +569,7 @@ module.exports = {
 
             let matkul4 = await matkuls.findOne({
                 where: {
-                    kode_matkul: "matkul4"
+                    kode_matkul: "nilai4"
                 }
             });
 
@@ -576,7 +585,7 @@ module.exports = {
 
             let sub_matkul4_1 = await sub_matkuls.findOne({
                 where: {
-                    kode_sub_matkul: "submatkul4_1"
+                    kode_sub_matkul: "nilai4_1"
                 }
             })
 
@@ -591,7 +600,7 @@ module.exports = {
 
             let sub_sub_matkul4_1_1 = await sub_sub_matkuls.findOne({
                 where: {
-                    kode_sub_sub_matkul: "subsubmatkul4_1_1"
+                    kode_sub_sub_matkul: "nilai4_1_1"
                 }
             })
 
@@ -606,7 +615,7 @@ module.exports = {
 
             let sub_sub_matkul4_1_2 = await sub_sub_matkuls.findOne({
                 where: {
-                    kode_sub_sub_matkul: "subsubmatkul4_1_2"
+                    kode_sub_sub_matkul: "nilai4_1_2"
                 }
             })
 
@@ -621,7 +630,7 @@ module.exports = {
 
             let sub_sub_matkul4_1_3 = await sub_sub_matkuls.findOne({
                 where: {
-                    kode_sub_sub_matkul: "subsubmatkul4_1_3"
+                    kode_sub_sub_matkul: "nilai4_1_3"
                 }
             })
 
@@ -636,7 +645,7 @@ module.exports = {
 
             let sub_sub_matkul4_1_4 = await sub_sub_matkuls.findOne({
                 where: {
-                    kode_sub_sub_matkul: "subsubmatkul4_1_4"
+                    kode_sub_sub_matkul: "nilai4_1_4"
                 }
             })
 
@@ -667,7 +676,7 @@ module.exports = {
 
             let matkul5 = await matkuls.findOne({
                 where: {
-                    kode_matkul: "matkul5"
+                    kode_matkul: "nilai5"
                 }
             });
 
@@ -683,7 +692,7 @@ module.exports = {
 
             let sub_matkul5_1 = await sub_matkuls.findOne({
                 where: {
-                    kode_sub_matkul: "submatkul5_1"
+                    kode_sub_matkul: "nilai5_1"
                 }
             })
 
@@ -698,7 +707,7 @@ module.exports = {
 
             let sub_matkul5_2 = await sub_matkuls.findOne({
                 where: {
-                    kode_sub_matkul: "submatkul5_2"
+                    kode_sub_matkul: "nilai5_2"
                 }
             })
 
@@ -713,7 +722,7 @@ module.exports = {
 
             let sub_matkul5_3 = await sub_matkuls.findOne({
                 where: {
-                    kode_sub_matkul: "submatkul5_3"
+                    kode_sub_matkul: "nilai5_3"
                 }
             })
 
@@ -739,7 +748,7 @@ module.exports = {
 
             let matkul6 = await matkuls.findOne({
                 where: {
-                    kode_matkul: "matkul6"
+                    kode_matkul: "nilai6"
                 }
             });
 
@@ -755,7 +764,7 @@ module.exports = {
 
             let sub_matkul6_1 = await sub_matkuls.findOne({
                 where: {
-                    kode_sub_matkul: "submatkul6_1"
+                    kode_sub_matkul: "nilai6_1"
                 }
             })
 
@@ -874,7 +883,7 @@ module.exports = {
 
             let matkul1 = await matkuls.findOne({
                 where: {
-                    kode_matkul: "matkul1"
+                    kode_matkul: "nilai1"
                 }
             });
 
@@ -889,7 +898,7 @@ module.exports = {
 
             let sub_matkul1_1 = await sub_matkuls.findOne({
                 where: {
-                    kode_sub_matkul: "submatkul1_1"
+                    kode_sub_matkul: "nilai1_1"
                 }
             })
 
@@ -907,7 +916,7 @@ module.exports = {
 
             let sub_matkul1_2 = await sub_matkuls.findOne({
                 where: {
-                    kode_sub_matkul: "submatkul1_2"
+                    kode_sub_matkul: "nilai1_2"
                 }
             })
 
@@ -925,7 +934,7 @@ module.exports = {
 
             let sub_matkul1_3 = await sub_matkuls.findOne({
                 where: {
-                    kode_sub_matkul: "submatkul1_3"
+                    kode_sub_matkul: "nilai1_3"
                 }
             })
 
@@ -943,7 +952,7 @@ module.exports = {
 
             let sub_matkul1_4 = await sub_matkuls.findOne({
                 where: {
-                    kode_sub_matkul: "submatkul1_4"
+                    kode_sub_matkul: "nilai1_4"
                 }
             })
 
@@ -972,7 +981,7 @@ module.exports = {
 
             let matkul2 = await matkuls.findOne({
                 where: {
-                    kode_matkul: "matkul2"
+                    kode_matkul: "nilai2"
                 }
             });
 
@@ -986,7 +995,7 @@ module.exports = {
 
             let sub_matkul2_1 = await sub_matkuls.findOne({
                 where: {
-                    kode_sub_matkul: "submatkul2_1"
+                    kode_sub_matkul: "nilai2_1"
                 }
             })
 
@@ -1004,7 +1013,7 @@ module.exports = {
 
             let sub_matkul2_2 = await sub_matkuls.findOne({
                 where: {
-                    kode_sub_matkul: "submatkul2_2"
+                    kode_sub_matkul: "nilai2_2"
                 }
             })
 
@@ -1022,7 +1031,7 @@ module.exports = {
 
             let sub_matkul2_3 = await sub_matkuls.findOne({
                 where: {
-                    kode_sub_matkul: "submatkul2_3"
+                    kode_sub_matkul: "nilai2_3"
                 }
             })
 
@@ -1051,7 +1060,7 @@ module.exports = {
 
             let matkul3 = await matkuls.findOne({
                 where: {
-                    kode_matkul: "matkul3"
+                    kode_matkul: "nilai3"
                 }
             });
 
@@ -1066,7 +1075,7 @@ module.exports = {
 
             let sub_matkul3_1 = await sub_matkuls.findOne({
                 where: {
-                    kode_sub_matkul: "submatkul3_1"
+                    kode_sub_matkul: "nilai3_1"
                 }
             })
 
@@ -1084,7 +1093,7 @@ module.exports = {
 
             let sub_matkul3_2 = await sub_matkuls.findOne({
                 where: {
-                    kode_sub_matkul: "submatkul3_2"
+                    kode_sub_matkul: "nilai3_2"
                 }
             })
 
@@ -1097,7 +1106,7 @@ module.exports = {
 
             let sub_sub_matkul3_2_1 = await sub_sub_matkuls.findOne({
                 where: {
-                    kode_sub_sub_matkul: "subsubmatkul3_2_1"
+                    kode_sub_sub_matkul: "nilai3_2_1"
                 }
             })
 
@@ -1115,7 +1124,7 @@ module.exports = {
 
             let sub_sub_matkul3_2_2 = await sub_sub_matkuls.findOne({
                 where: {
-                    kode_sub_sub_matkul: "subsubmatkul3_2_2"
+                    kode_sub_sub_matkul: "nilai3_2_2"
                 }
             })
 
@@ -1133,7 +1142,7 @@ module.exports = {
 
             let sub_sub_matkul3_2_3 = await sub_sub_matkuls.findOne({
                 where: {
-                    kode_sub_sub_matkul: "subsubmatkul3_2_3"
+                    kode_sub_sub_matkul: "nilai3_2_3"
                 }
             })
 
@@ -1151,7 +1160,7 @@ module.exports = {
 
             let sub_sub_matkul3_2_4 = await sub_sub_matkuls.findOne({
                 where: {
-                    kode_sub_sub_matkul: "subsubmatkul3_2_4"
+                    kode_sub_sub_matkul: "nilai3_2_4"
                 }
             })
 
@@ -1186,7 +1195,7 @@ module.exports = {
 
             let matkul4 = await matkuls.findOne({
                 where: {
-                    kode_matkul: "matkul4"
+                    kode_matkul: "nilai4"
                 }
             });
 
@@ -1200,7 +1209,7 @@ module.exports = {
 
             let sub_matkul4_1 = await sub_matkuls.findOne({
                 where: {
-                    kode_sub_matkul: "submatkul4_1"
+                    kode_sub_matkul: "nilai4_1"
                 }
             })
 
@@ -1213,7 +1222,7 @@ module.exports = {
 
             let sub_sub_matkul4_1_1 = await sub_sub_matkuls.findOne({
                 where: {
-                    kode_sub_sub_matkul: "subsubmatkul4_1_1"
+                    kode_sub_sub_matkul: "nilai4_1_1"
                 }
             })
 
@@ -1231,7 +1240,7 @@ module.exports = {
 
             let sub_sub_matkul4_1_2 = await sub_sub_matkuls.findOne({
                 where: {
-                    kode_sub_sub_matkul: "subsubmatkul4_1_2"
+                    kode_sub_sub_matkul: "nilai4_1_2"
                 }
             })
 
@@ -1249,7 +1258,7 @@ module.exports = {
 
             let sub_sub_matkul4_1_3 = await sub_sub_matkuls.findOne({
                 where: {
-                    kode_sub_sub_matkul: "subsubmatkul4_1_3"
+                    kode_sub_sub_matkul: "nilai4_1_3"
                 }
             })
 
@@ -1267,7 +1276,7 @@ module.exports = {
 
             let sub_sub_matkul4_1_4 = await sub_sub_matkuls.findOne({
                 where: {
-                    kode_sub_sub_matkul: "subsubmatkul4_1_4"
+                    kode_sub_sub_matkul: "nilai4_1_4"
                 }
             })
 
@@ -1301,7 +1310,7 @@ module.exports = {
 
             let matkul5 = await matkuls.findOne({
                 where: {
-                    kode_matkul: "matkul5"
+                    kode_matkul: "nilai5"
                 }
             });
 
@@ -1315,7 +1324,7 @@ module.exports = {
 
             let sub_matkul5_1 = await sub_matkuls.findOne({
                 where: {
-                    kode_sub_matkul: "submatkul5_1"
+                    kode_sub_matkul: "nilai5_1"
                 }
             })
 
@@ -1333,7 +1342,7 @@ module.exports = {
 
             let sub_matkul5_2 = await sub_matkuls.findOne({
                 where: {
-                    kode_sub_matkul: "submatkul5_2"
+                    kode_sub_matkul: "nilai5_2"
                 }
             })
 
@@ -1351,7 +1360,7 @@ module.exports = {
 
             let sub_matkul5_3 = await sub_matkuls.findOne({
                 where: {
-                    kode_sub_matkul: "submatkul5_3"
+                    kode_sub_matkul: "nilai5_3"
                 }
             })
 
@@ -1380,7 +1389,7 @@ module.exports = {
 
             let matkul6 = await matkuls.findOne({
                 where: {
-                    kode_matkul: "matkul6"
+                    kode_matkul: "nilai6"
                 }
             });
 
@@ -1394,7 +1403,7 @@ module.exports = {
 
             let sub_matkul6_1 = await sub_matkuls.findOne({
                 where: {
-                    kode_sub_matkul: "submatkul6_1"
+                    kode_sub_matkul: "nilai6_1"
                 }
             })
 
@@ -1467,7 +1476,7 @@ module.exports = {
     //     try {
     //         let matkul1 = await matkuls.findOne({
     //             where: {
-    //                 kode_matkul: "matkul1"
+    //                 kode_matkul: "nilai1"
     //             }
     //         });
 

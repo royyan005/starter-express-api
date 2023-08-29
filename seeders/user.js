@@ -17,6 +17,7 @@ module.exports = {
             password: "$2b$10$Aoj88DP.OHZESPYkGmTkBelxuNo/k3fZc0vCAi2wGXmP69OvxnC5e",
             role: "ADMIN",
             full_name: "Admin",
+            nip: "123456789",
             createdBy: "Admin",
             updatedBy: "Admin",
             createdAt: new Date(),

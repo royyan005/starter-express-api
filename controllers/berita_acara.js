@@ -2,7 +2,8 @@ const {
     mahasiswas,
     pembimbings,
     matkuls,
-    nilai_matkuls
+    nilai_matkuls,
+    users
 } = require("../models")
 const {
     HurufMutu
@@ -10,22 +11,23 @@ const {
 module.exports = {
     getBeritaAcara: async (req, res, next) => {
         const {
-            user_id
+            mahasiswa_id
         } = req.params;
         try {
             let matkul = await matkuls.count();
             let mahasiswa = await mahasiswas.findOne({
                 where: {
-                    id: user_id
+                    id: mahasiswa_id
                 },
                 include: [{
-                    model: nilai_matkuls,
-                    as: 'nilai_matkuls',
-                    attributes: ['id', 'average', 'matkul_id'],
+                    model: pembimbings,
+                    as: 'pembimbings',
+                    attributes: ['id', 'jenis_role', 'user_id', 'user_full_name'],
                     include: [{
-                        model: pembimbings,
-                        as: 'pembimbings',
-                        attributes: ['id', 'jenis_role', 'user_id', 'user_full_name'],
+                        model: nilai_matkuls,
+                        as: 'nilai_matkuls',
+                        attributes: ['id', 'average', 'matkul_id'],
+                        
                     }]
                 }]
             });
@@ -35,14 +37,15 @@ module.exports = {
                     message: 'data not found!',
                 })
             }
-            let nilai_pembimbing1 = mahasiswa.nilai_matkuls.filter((nilai_matkul) => nilai_matkul.pembimbings.jenis_role == 'pembimbing1')
-            let nilai_pembimbing2 = mahasiswa.nilai_matkuls.filter((nilai_matkul) => nilai_matkul.pembimbings.jenis_role == 'pembimbing2')
-            let nilai_penguji = mahasiswa.nilai_matkuls.filter((nilai_matkul) => nilai_matkul.pembimbings.jenis_role == 'penguji')
+
+            let nilai_pembimbing1 = mahasiswa.pembimbings.filter(p => p.jenis_role == 'pembimbing1').map(p => p.nilai_matkuls)[0]
+            let nilai_pembimbing2 = mahasiswa.pembimbings.filter(p => p.jenis_role == 'pembimbing2').map(p => p.nilai_matkuls)[0]
+            let nilai_penguji = mahasiswa.pembimbings.filter(p => p.jenis_role == 'penguji').map(p => p.nilai_matkuls)[0]
             let i = 0
             let average_pembimbing1 = 0
             let average_pembimbing2 = 0
             let average_penguji = 0
-            while (i<matkul) {
+            while (i < matkul) {
                 average_pembimbing1 += nilai_pembimbing1[i].average
                 average_pembimbing2 += nilai_pembimbing2[i].average
                 average_penguji += nilai_penguji[i].average
@@ -54,13 +57,46 @@ module.exports = {
             let final_average_pembimbing1 = average_pembimbing1 * 0.4
             let final_average_pembimbing2 = average_pembimbing2 * 0.3
             let final_average_penguji = average_penguji * 0.3
+            let pembimbing1 = mahasiswa.pembimbings.filter(p => p.jenis_role == 'pembimbing1')[0]
+            let dosen_pembimbing1 = await users.findOne({
+                where: {
+                    id: pembimbing1.user_id
+                }
+            })
+            let pembimbing2 = mahasiswa.pembimbings.filter(p => p.jenis_role == 'pembimbing2')[0]
+            let dosen_pembimbing2 = await users.findOne({
+                where: {
+                    id: pembimbing2.user_id
+                }
+            })
+            let penguji = mahasiswa.pembimbings.filter(p => p.jenis_role == 'penguji')[0]
+            let dosen_penguji = await users.findOne({
+                where: {
+                    id: penguji.user_id
+                }
+            })
 
             let data = {
                 mahasiswa: {
                     id: mahasiswa.id,
                     full_name: mahasiswa.full_name,
                     npm: mahasiswa.npm,
-                    jurusan: mahasiswa.jurusan
+                    jurusan: mahasiswa.jurusan,
+                    pembimbing_1: {
+                        id: dosen_pembimbing1.id,
+                        full_name: dosen_pembimbing1.full_name,
+                        nip: dosen_pembimbing1.nip,
+                    },
+                    pembimbing_2: {
+                        id: dosen_pembimbing2.id,
+                        full_name: dosen_pembimbing2.full_name,
+                        nip: dosen_pembimbing2.nip,
+                    },
+                    penguji: {
+                        id: dosen_penguji.id,
+                        full_name: dosen_penguji.full_name,
+                        nip: dosen_penguji.nip,
+                    },
                 },
                 nilai: {
                     pembimbing_1: average_pembimbing1,
@@ -76,7 +112,7 @@ module.exports = {
                 huruf_mutu: HurufMutu((final_average_pembimbing1 + final_average_pembimbing2 + final_average_penguji) / 3)
 
             }
-            
+
             return res.status(200).json({
                 status: true,
                 message: 'get data success!',

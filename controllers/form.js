@@ -30,7 +30,7 @@ module.exports = {
                     id: user_id
                 }
             });
-            if(!user){
+            if (!user) {
                 return res.status(400).json({
                     status: false,
                     message: 'user not found!'
@@ -41,7 +41,7 @@ module.exports = {
                     id: mahasiswa_id
                 }
             });
-            if(!mahasiswa){
+            if (!mahasiswa) {
                 return res.status(400).json({
                     status: false,
                     message: 'mahasiswa not found!'
@@ -53,7 +53,7 @@ module.exports = {
                     mahasiswa_id: mahasiswa.id
                 }
             })
-            if(!pembimbing){
+            if (!pembimbing) {
                 return res.status(400).json({
                     status: false,
                     message: 'pembimbing not found!'
@@ -72,6 +72,9 @@ module.exports = {
                 nama_mahasiswa: mahasiswa.full_name,
                 nilai
             };
+            let message = [];
+            let index = 0
+            let eligible = true
             while (matkul[i]) {
                 nilai_matkul = await nilai_matkuls.findOne({
                     where: {
@@ -80,6 +83,15 @@ module.exports = {
                         pembimbing_id: pembimbing.id
                     }
                 })
+                if (!nilai_matkul) {
+                    message[index] = {
+                        msg: "nilai-nilai pada matkul " + matkul[i].kode_matkul + " belum diinputkan!"
+                    }
+                    index++
+                    eligible = false
+                    i++
+                    continue
+                }
                 nilai[i] = {
                     kode: matkul[i].kode_matkul,
                     nama_matkul: matkul[i].deskripsi,
@@ -99,6 +111,15 @@ module.exports = {
                             nilai_matkul_id: nilai_matkul.id
                         }
                     })
+                    if (!nilai_sub_matkul) {
+                        message[index] = {
+                            msg: "nilai pada sub matkul " + sub_matkul[j].kode_sub_matkul + " belum diinputkan!"
+                        }
+                        index++
+                        eligible = false
+                        j++
+                        continue
+                    }
                     nilai[i].sub[j] = {
                         kode: sub_matkul[j].kode_sub_matkul,
                         nama_sub_matkul: sub_matkul[j].deskripsi,
@@ -124,6 +145,15 @@ module.exports = {
                                     nilai_sub_matkul_id: nilai_sub_matkul.id
                                 }
                             })
+                            if (!nilai_sub_sub_matkul) {
+                                message[index] = {
+                                    msg: "nilai pada sub sub matkul " + sub_sub_matkul[k].kode_sub_sub_matkul + " belum diinputkan!"
+                                }
+                                index++
+                                eligible = false
+                                k++
+                                continue
+                            }
                             nilai[i].sub[j].sub[k] = {
                                 kode: sub_sub_matkul[k].kode_sub_sub_matkul,
                                 nama_sub_sub_matkul: sub_sub_matkul[k].deskripsi,
@@ -136,7 +166,12 @@ module.exports = {
                 }
                 i++;
             }
-
+            if(!eligible){
+                return res.status(400).json({
+                    status: false,
+                    message: message
+                })
+            }
             return res.status(200).json({
                 status: true,
                 message: 'get all data success!',

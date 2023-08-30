@@ -1,26 +1,17 @@
 const {
     mahasiswas,
     pembimbings,
-    users,
     matkuls,
     nilai_matkuls
 } = require("../models")
 const {
-    DB_USERNAME,
-    DB_PASSWORD,
-    DB_HOST,
-    DB_NAME
-} = process.env;
-const {
-    Sequelize,
     Op
 } = require('sequelize');
 
-const sequelize = new Sequelize(DB_NAME, DB_USERNAME, DB_PASSWORD, {
-    host: DB_HOST,
-    dialect: 'mysql',
-    // ... other options
-});
+function hasUniqueItems(arr) {
+    const set = new Set(arr);
+    return set.size === arr.length;
+}
 
 module.exports = {
     getAll: async (req, res, next) => {
@@ -174,7 +165,7 @@ module.exports = {
     },
     getAllWithFullNilai: async (req, res, next) => { //get all mahasiswa where nilai completed //not done yet
         try {
-            let matkul_count = await matkuls.count()
+            let matkul_count = await matkuls.findAndCountAll()
             const mahasiswa = await mahasiswas.findAll({
                 include: [{
                     model: nilai_matkuls,
@@ -183,7 +174,7 @@ module.exports = {
                 }, ],
             });
 
-            if(mahasiswa.length == 0){
+            if (mahasiswa.length == 0) {
                 return res.status(400).json({
                     status: false,
                     message: 'data not found!',
@@ -192,8 +183,39 @@ module.exports = {
 
             let data = []
             let i = 0
+
             while (mahasiswa[i]) {
-                if (mahasiswa[i].nilai_matkuls.length == matkul_count * 3) {
+                let eligible = []
+                let j = 0
+                while (matkul_count.rows[j]) {
+                    let filtered_nilai = mahasiswa[i].nilai_matkuls.filter(nilai => nilai.matkul_id == matkul_count.rows[j].id)
+                    let nilai_pembimbing = []
+                    let k = 0
+                    while (filtered_nilai[k]) {
+                        nilai_pembimbing.push(filtered_nilai[k].pembimbing_id)
+                        k++
+                    }
+                    let uniqueCheck = hasUniqueItems(nilai_pembimbing)
+                    // console.log(uniqueCheck);
+                    // console.log(nilai_pembimbing.length==3);
+                    // console.log("===================================================");
+
+                    if (uniqueCheck && nilai_pembimbing.length === 3) {
+                        eligible[j] = true
+                    } else {
+                        eligible[j] = false
+                    }
+                    j++
+                }
+                // if (mahasiswa[i].nilai_matkuls.length == matkul_count * 3) {
+                //     data.push({
+                //         id: mahasiswa[i].id,
+                //         full_name: mahasiswa[i].full_name,
+                //         npm: mahasiswa[i].npm,
+                //         jurusan: mahasiswa[i].jurusan
+                //     })
+                // }
+                if (!eligible.includes(false)) {
                     data.push({
                         id: mahasiswa[i].id,
                         full_name: mahasiswa[i].full_name,
@@ -239,7 +261,7 @@ module.exports = {
             //     }
             //     mahasiswa.nilai = nilai
             // }
-            if(data.length == 0){
+            if (data.length == 0) {
                 return res.status(400).json({
                     status: false,
                     message: 'data not found!',

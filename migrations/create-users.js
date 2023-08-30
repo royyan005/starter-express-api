@@ -24,6 +24,9 @@ module.exports = {
       full_name: {
         type: Sequelize.STRING
       },
+      nip: {
+        type: Sequelize.STRING
+      },
       createdBy: {
         type: Sequelize.STRING
       },

@@ -7,5 +7,6 @@ const middleware = require('../middleware/verifyToken')
 router.get('/', controllers.nilai_matkul.getAll);
 router.get('/:id', controllers.nilai_matkul.getById);
 router.delete('/:id', middleware.verifyTokenDosen, controllers.nilai_matkul.delete);
+router.delete('/delete/:mahasiswa_id', middleware.verifyTokenDosen, controllers.nilai_matkul.deleteAllbyPembimbing);
 
 module.exports = router;

@@ -16,42 +16,42 @@ module.exports = {
       {
       sks: 2,                                             //id 1
       deskripsi: "Kode Etik dan Etika Profesi Insinyur",
-      kode_matkul: "matkul1",
+      kode_matkul: "nilai1",
       createdAt: new Date(),
       updatedAt: new Date()
     },
       {
       sks: 2,                                             //id 2
       deskripsi: "Profesionalisme Keinsinyuran",
-      kode_matkul: "matkul2",
+      kode_matkul: "nilai2",
       createdAt: new Date(),
       updatedAt: new Date()
     },
       {
       sks: 2,                                             //id 3
       deskripsi: "Keselamatan Kesehatan Kerja dan Lingkungan",
-      kode_matkul: "matkul3",
+      kode_matkul: "nilai3",
       createdAt: new Date(),
       updatedAt: new Date()
     },
       {
       sks: 12,                                             //id 4
       deskripsi: "Praktik Keinsinyuran",
-      kode_matkul: "matkul4",
+      kode_matkul: "nilai4",
       createdAt: new Date(),
       updatedAt: new Date()
     },
       {
       sks: 4,                                             //id 5
       deskripsi: "Studi Kasus",
-      kode_matkul: "matkul5",
+      kode_matkul: "nilai5",
       createdAt: new Date(),
       updatedAt: new Date()
     },
       {
       sks: 2,                                             //id 6
       deskripsi: "Seminar, Workshop, Diskusi",
-      kode_matkul: "matkul6",
+      kode_matkul: "nilai6",
       createdAt: new Date(),
       updatedAt: new Date()
     }

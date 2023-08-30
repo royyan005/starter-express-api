@@ -8,6 +8,7 @@ router.get('/', controllers.sub_matkul.getAll);
 router.get('/sub-sub-matkul-true', controllers.sub_matkul.getAllwSubSub);
 router.get('/:id', controllers.sub_matkul.getById);
 router.post('/', middleware.verifyTokenAdminOrSuperAdmin, controllers.sub_matkul.create);
+router.post('/createorupdate', middleware.verifyTokenAdminOrSuperAdmin, controllers.sub_matkul.createOrUpdate)
 router.put('/:id', middleware.verifyTokenAdminOrSuperAdmin, controllers.sub_matkul.update);
 router.delete('/:id', middleware.verifyTokenAdminOrSuperAdmin, controllers.sub_matkul.delete);
 

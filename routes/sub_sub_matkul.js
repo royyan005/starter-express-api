@@ -7,6 +7,7 @@ const middleware = require('../middleware/verifyToken')
 router.get('/', controllers.sub_sub_matkul.getAll);
 router.get('/:id', controllers.sub_sub_matkul.getById);
 router.post('/', middleware.verifyTokenAdminOrSuperAdmin, controllers.sub_sub_matkul.create);
+router.post('/createorupdate', middleware.verifyTokenAdminOrSuperAdmin, controllers.sub_sub_matkul.createOrUpdate)
 router.put('/:id', middleware.verifyTokenAdminOrSuperAdmin, controllers.sub_sub_matkul.update);
 router.delete('/:id', middleware.verifyTokenAdminOrSuperAdmin, controllers.sub_sub_matkul.delete);
 

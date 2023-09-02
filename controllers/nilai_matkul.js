@@ -300,6 +300,14 @@ module.exports = {
                     pembimbing_id: pembimbing.id
                 }
             });
+
+            await pembimbings.destroy({
+                where: {
+                    user_id: req.idUser,
+                    mahasiswa_id: mahasiswa_id
+                }
+            })
+            
             return res.status(200).json({
                 status: true,
                 message: 'delete data success!',

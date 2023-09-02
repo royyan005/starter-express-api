@@ -9,6 +9,9 @@ const {
     AngkaMutu,
     AngkaMutuAverage
 } = require("../helpers/helper");
+const {
+    Op
+} = require('sequelize');
 
 module.exports = {
     // BUAT TOTAL NILAI UNTUK SEMUA MATKUL UNTUK 1 MAHASISWA
@@ -219,9 +222,35 @@ module.exports = {
     },
     getTotalAllMahasiswa: async (req, res, next) => { //get all mahasiswa with nilai
         try {
-            let mahasiswa = await mahasiswas.findAll()
+            let {
+                sort = "full_name", type = "ASC", search = "", page = "1", limit = "10"
+            } = req.query;
+            page = parseInt(page);
+            limit = parseInt(limit)
+            let start = 0 + (page - 1) * limit;
+            let end = page * limit;
+            let mahasiswa = await mahasiswas.findAndCountAll({
+                where: {
+                    [Op.or]: [{
+                            full_name: {
+                                [Op.like]: `%${search}%`
+                            }
+                        },
+                        {
+                            npm: {
+                                [Op.like]: `%${search}%`
+                            }
+                        }
+                    ]
+                },
+                order: [
+                    [sort, type]
+                ],
+                limit: limit,
+                offset: start
+            });
 
-            if (!mahasiswa[0]) {
+            if (!mahasiswa.rows[0]) {
                 return res.status(400).json({
                     status: false,
                     message: 'mahasiswa not found!'
@@ -231,18 +260,18 @@ module.exports = {
             let matkul = await matkuls.findAll();
             let data = [];
             let m = 0;
-            while (mahasiswa[m]) {
+            while (mahasiswa.rows[m]) {
                 let output = [];
                 let eligible = true
                 let pembimbing = await pembimbings.findAll({
                     where: {
-                        mahasiswa_id: mahasiswa[m].id
+                        mahasiswa_id: mahasiswa.rows[m].id
                     }
                 })
-                if (pembimbing.length != 3) {
-                    m++
-                    continue
-                }
+                // if (pembimbing.length != 3) {
+                //     m++
+                //     continue
+                // }
                 let i = 0;
                 let total_sks = 0;
                 let total_nilai_mutu = 0;
@@ -250,19 +279,19 @@ module.exports = {
                 let huruf_mutu, angka_mutu, nilai_mutu
                 let nilai = []
                 while (matkul[i]) {
-                    if (!eligible) {
-                        break
-                    }
+                    // if (!eligible) {
+                    //     break
+                    // }
                     let nilai_matkul = await nilai_matkuls.findAll({
                         where: {
                             matkul_id: matkul[i].id,
-                            mahasiswa_id: mahasiswa[m].id
+                            mahasiswa_id: mahasiswa.rows[m].id
                         }
                     })
-                    if (nilai_matkul.length != 3) {
-                        eligible = false
-                        break
-                    }
+                    // if (nilai_matkul.length != 3) {
+                    //     eligible = false
+                    //     break
+                    // }
                     let j = 0;
                     let nilai_semua_dosen = 0;
                     while (nilai_matkul[j]) {
@@ -301,17 +330,17 @@ module.exports = {
                     }
                     i++
                 }
-                if (!eligible) {
-                    m++
-                    continue
-                }
+                // if (!eligible) {
+                //     m++
+                //     continue
+                // }
                 let ipk = total_nilai_mutu / total_sks;
                 let huruf_mutu_akhir = AngkaMutuAverage(ipk)
 
                 output[m] = {
-                    id_mahasiswa: mahasiswa[m].id,
-                    nama_mahasiswa: mahasiswa[m].full_name,
-                    npm: mahasiswa[m].npm,
+                    id_mahasiswa: mahasiswa.rows[m].id,
+                    nama_mahasiswa: mahasiswa.rows[m].full_name,
+                    npm: mahasiswa.rows[m].npm,
                     total_sks : total_sks,
                     ipk : ipk,
                     huruf_mutu_akhir : huruf_mutu_akhir,
@@ -319,21 +348,49 @@ module.exports = {
                 }
                 if (eligible){
                     data.push(output[m])
+                } else {
+                    output[m] = {
+                        id_mahasiswa: mahasiswa.rows[m].id,
+                        nama_mahasiswa: mahasiswa.rows[m].full_name,
+                        npm: mahasiswa.rows[m].npm,
+                        total_sks : "-",
+                        ipk : "-",
+                        huruf_mutu_akhir : "-",
+                        nilai: "-"
+                    }
+                    data.push(output[m])
                 }
                 m++
             }
 
-            if(data.length==0){
-                return res.status(400).json({
-                    status: false,
-                    message: 'data not found!'
-                });
+            // if(data.length==0){
+            //     return res.status(400).json({
+            //         status: false,
+            //         message: 'data not found!'
+            //     });
+            // }
+
+            let count = mahasiswa.count;
+            let pagination = {}
+            pagination.totalRows = count;
+            pagination.totalPages = Math.ceil(count / limit);
+            pagination.thisPageRows = mahasiswa.rows.length;
+            pagination.thisPageData = data
+            if (end < count) {
+                pagination.next = {
+                    page: page + 1
+                }
+            }
+            if (start > 0) {
+                pagination.prev = {
+                    page: page - 1
+                }
             }
 
             return res.status(200).json({
                 status: true,
-                message: 'get data success!',
-                data: data
+                message: 'get all data success!',
+                data: pagination
             });
         } catch (err) {
             next(err)

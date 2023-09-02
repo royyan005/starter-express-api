@@ -216,12 +216,14 @@ module.exports = {
     },
     delete: async (req, res, next) => {
         const {
-            id
+            mahasiswa_id,
+            user_id
         } = req.params
         try {
             let pembimbing = await pembimbings.findOne({
                 where: {
-                    id: id
+                    mahasiswa_id: mahasiswa_id,
+                    user_id: user_id
                 }
             });
 

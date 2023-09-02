@@ -43,11 +43,33 @@ module.exports = {
                 limit: limit,
                 offset: start
             });
-            let count = sub_matkul.count;
+
+            let sub_matkulCount = await sub_matkuls.findAndCountAll({
+                where: {
+                    [Op.or]: [{
+                            deskripsi: {
+                                [Op.like]: `%${search}%`
+                            }
+                        },
+                        {
+                            kode_sub_matkul: {
+                                [Op.like]: `%${search}%`
+                            }
+                        }
+                    ]
+                },
+                order: [
+                    [sort, type]
+                ],
+                limit: limit,
+                offset: start
+            });
+
+            let count = sub_matkulCount.count;
             let pagination = {}
             pagination.totalRows = count;
             pagination.totalPages = Math.ceil(count / limit);
-            pagination.thisPageRows = sub_matkul.rows.length;
+            pagination.thisPageRows = sub_matkulCount.rows.length;
             pagination.thisPageData = sub_matkul.rows
             if (end < count) {
                 pagination.next = {

@@ -94,7 +94,10 @@ module.exports = {
                         message: message.matkul[i].msg
                     };
                     i++
-                    continue
+                    return res.status(400).json({
+                        status: false,
+                        message: "Ada nilai yang belum diinputkan"
+                    })
                 }
                 // console.log(eligible);
                 data.nilai[i] = {
@@ -127,7 +130,10 @@ module.exports = {
                             message: message.sub[j].msg
                         }
                         j++
-                        continue
+                        return res.status(400).json({
+                            status: false,
+                            message: "Ada nilai yang belum diinputkan"
+                        })
                     }
                     
                     data.nilai[i].sub[j] = {
@@ -164,7 +170,10 @@ module.exports = {
                                     message: message.sub[k].msg
                                 }
                                 k++
-                                continue
+                                return res.status(400).json({
+                                    status: false,
+                                    message: "Ada nilai yang belum diinputkan"
+                                })
                             }
                             data.nilai[i].sub[j].sub_sub[k] = {
                                 kode: sub_sub_matkul[k].kode_sub_sub_matkul,

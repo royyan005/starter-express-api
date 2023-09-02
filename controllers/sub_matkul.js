@@ -245,6 +245,12 @@ module.exports = {
                 });
             }
 
+            await klasifikasi_sub_matkuls.destroy({
+                where: {
+                    sub_matkul_id: sub_matkul.id
+                }
+            })
+
             await sub_matkul.destroy();
             return res.status(200).json({
                 status: true,

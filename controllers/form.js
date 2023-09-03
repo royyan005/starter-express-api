@@ -33,7 +33,7 @@ module.exports = {
             if (!user) {
                 return res.status(400).json({
                     status: false,
-                    message: 'user not found!'
+                    message: 'pembimbing/penguji not found!'
                 });
             }
             let mahasiswa = await mahasiswas.findOne({
@@ -56,7 +56,7 @@ module.exports = {
             if (!pembimbing) {
                 return res.status(400).json({
                     status: false,
-                    message: 'pembimbing not found!'
+                    message: 'pembimbing/penguji not found!'
                 });
             }
             let nilai_matkul;

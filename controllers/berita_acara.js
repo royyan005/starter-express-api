@@ -31,10 +31,10 @@ module.exports = {
                     }]
                 }]
             });
-            if (!mahasiswa) {
+            if (mahasiswa.pembimbings.length < 3) {
                 return res.status(400).json({
                     status: false,
-                    message: 'data not found!',
+                    message: 'nilai mahasiswa belum lengkap!',
                 })
             }
 
@@ -108,8 +108,8 @@ module.exports = {
                     pembimbing_2: final_average_pembimbing2,
                     penguji: final_average_penguji
                 },
-                nilai_akhir_rata_rata: (final_average_pembimbing1 + final_average_pembimbing2 + final_average_penguji) / 3,
-                huruf_mutu: HurufMutu((final_average_pembimbing1 + final_average_pembimbing2 + final_average_penguji) / 3)
+                nilai_akhir_rata_rata: (final_average_pembimbing1 + final_average_pembimbing2 + final_average_penguji),
+                huruf_mutu: HurufMutu((final_average_pembimbing1 + final_average_pembimbing2 + final_average_penguji))
 
             }
 

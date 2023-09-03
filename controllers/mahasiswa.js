@@ -2,7 +2,9 @@ const {
     mahasiswas,
     pembimbings,
     matkuls,
-    nilai_matkuls
+    nilai_matkuls,
+    nilai_sub_matkuls,
+    nilai_sub_sub_matkuls
 } = require("../models")
 const {
     Op
@@ -116,6 +118,7 @@ module.exports = {
                     },
                 });
                 let j = 0;
+                let isPembimbing = false
                 let pembimbing1 = "-"
                 let pembimbing2 = "-"
                 let penguji = "-"
@@ -127,10 +130,22 @@ module.exports = {
                     } else {
                         penguji = pembimbing[j]
                     }
+                    if (pembimbing[j].user_id == req.idUser) {
+                        let nilai_matkul = await nilai_matkuls.findAll({
+                            where: {
+                                mahasiswa_id: mahasiswa.rows[i].id,
+                                pembimbing_id: pembimbing[j].user_id
+                            },
+                        });
+                        if (nilai_matkul) {
+                            isPembimbing = true
+                        }
+                    }
                     j++
                 }
                 data[i] = {
                     mahasiswa_data: mahasiswa.rows[i],
+                    isPembimbing: isPembimbing,
                     pembimbing1: pembimbing1,
                     pembimbing2: pembimbing2,
                     penguji: penguji

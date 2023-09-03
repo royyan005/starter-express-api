@@ -7,7 +7,7 @@ const middleware = require('../middleware/verifyToken')
 router.get('/', controllers.mahasiswa.getAll);
 router.get('/nilai-completed', controllers.mahasiswa.getAllWithFullNilai);
 router.get('/detail/:id', controllers.mahasiswa.getById);
-router.get('/pembimbing/', middleware.verifyTokenDosen, controllers.mahasiswa.getMahasiswaAndPembimbing);
+router.get('/pembimbing/', middleware.isLogin, controllers.mahasiswa.getMahasiswaAndPembimbing);
 router.post('/', middleware.verifyTokenAdminOrSuperAdmin, controllers.mahasiswa.create);
 router.put('/:id', middleware.verifyTokenAdminOrSuperAdmin, controllers.mahasiswa.update);
 router.delete('/:id', middleware.verifyTokenAdminOrSuperAdmin, controllers.mahasiswa.delete);

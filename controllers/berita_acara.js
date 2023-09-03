@@ -85,17 +85,17 @@ module.exports = {
                     pembimbing_1: {
                         id: dosen_pembimbing1.id,
                         full_name: dosen_pembimbing1.full_name,
-                        nip: dosen_pembimbing1.nip,
+                        username: dosen_pembimbing1.username,
                     },
                     pembimbing_2: {
                         id: dosen_pembimbing2.id,
                         full_name: dosen_pembimbing2.full_name,
-                        nip: dosen_pembimbing2.nip,
+                        username: dosen_pembimbing2.username,
                     },
                     penguji: {
                         id: dosen_penguji.id,
                         full_name: dosen_penguji.full_name,
-                        nip: dosen_penguji.nip,
+                        username: dosen_penguji.username,
                     },
                 },
                 nilai: {
